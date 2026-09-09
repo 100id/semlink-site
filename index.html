@@ -3,44 +3,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sem Link | As Melhores Ofertas</title>
+  <title>Sem Link | Calculadoras & Ferramentas Úteis</title>
   <style>
+    :root {
+      --bg: #fafafa;
+      --card-bg: #ffffff;
+      --text-main: #1a1a1a;
+      --text-sub: #666666;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --border: #e5e7eb;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f5f5f7; color: #1d1d1f; padding-bottom: 40px; }
-    header { background: #ffe600; padding: 20px; text-align: center; font-weight: bold; font-size: 1.5rem; color: #2d3277; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-    .card { background: #fff; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
-    .card img { max-width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px; }
-    .card h3 { font-size: 1.1rem; margin-bottom: 10px; color: #333; }
-    .card .price { font-size: 1.4rem; color: #00a650; font-weight: bold; margin-bottom: 15px; }
-    .btn { display: inline-block; background: #3483fa; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; transition: background 0.2s; }
-    .btn:hover { background: #2968c8; }
-    footer { text-align: center; margin-top: 40px; font-size: 0.85rem; color: #888; }
+    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Cabeçalho Limpo */
+    header { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 1rem 2rem; }
+    .header-container { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .logo { font-size: 1.25rem; font-weight: 700; color: var(--text-main); text-decoration: none; letter-spacing: -0.5px; }
+
+    /* Navegação por Nichos Principal */
+    nav ul { display: flex; list-style: none; gap: 0.5rem; flex-wrap: wrap; }
+    nav button { background: transparent; border: 1px solid transparent; padding: 0.5rem 1rem; border-radius: 20px; color: var(--text-sub); font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    nav button:hover { background: #f3f4f6; color: var(--text-main); }
+    nav button.active { background: #eff6ff; color: var(--accent); border-color: #bfdbfe; font-weight: 600; }
+
+    /* Conteúdo Principal */
+    main { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; flex: 1; width: 100%; }
+    .section-title { margin-bottom: 1.5rem; }
+    .section-title h1 { font-size: 1.5rem; color: var(--text-main); }
+    .section-title p { color: var(--text-sub); font-size: 0.95rem; margin-top: 0.25rem; }
+
+    /* Subpastas / Cards de Calculadoras */
+    .grid-calculadoras { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+    .calc-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-decoration: none; color: inherit; transition: all 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
+    .calc-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border-color: #d1d5db; }
+    .calc-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .calc-card h3 { font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.5rem; }
+    .calc-card p { font-size: 0.875rem; color: var(--text-sub); line-height: 1.4; }
+    .calc-card .tag { margin-top: 1rem; font-size: 0.75rem; font-weight: 600; color: var(--accent); display: inline-block; }
+
+    /* Área Útil / Vitrine de Produtos (Abaixo das Calculadoras) */
+    .products-section { margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .product-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+    .product-card img { width: 100%; height: 140px; object-fit: contain; margin-bottom: 0.5rem; }
+    .product-card h4 { font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 500; }
+    .btn-buy { display: block; background: var(--accent); color: white; text-decoration: none; padding: 0.5rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; margin-top: 0.5rem; }
+    .btn-buy:hover { background: var(--accent-hover); }
+
+    /* Rodapé Limpo */
+    footer { border-top: 1px solid var(--border); padding: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-sub); background: var(--card-bg); margin-top: auto; }
   </style>
 </head>
 <body>
 
+  <!-- CABEÇALHO COM NICHOS PRINCIPAIS -->
   <header>
-    Sem Link - Ofertas Selecionadas
+    <div class="header-container">
+      <a href="#" class="logo">Sem Link</a>
+      <nav>
+        <ul>
+          <li><button class="active" onclick="filtrarNicho('todos', this)">Todos</button></li>
+          <li><button onclick="filtrarNicho('trabalho', this)">Trabalho & RH</button></li>
+          <li><button onclick="filtrarNicho('financas', this)">Finanças</button></li>
+          <li><button onclick="filtrarNicho('saude', this)">Saúde & Fitness</button></li>
+          <li><button onclick="filtrarNicho('utilidades', this)">Utilidades</button></li>
+        </ul>
+      </nav>
+    </div>
   </header>
 
-  <div class="container">
-    <div class="grid">
-      <!-- Produto de Teste -->
-      <div class="card">
-        <img src="https://http2.mlstatic.com/D_NQ_NP_2X_736376-MLA72084606132_102023-F.webp" alt="Produto Exemplo">
-        <h3>Smart TV 50" 4K UHD</h3>
-        <div class="price">R$ 2.199,00</div>
-        <!-- Troque o href abaixo pelo seu link de afiliado real quando quiser -->
-        <a href="https://www.mercadolivre.com.br" target="_blank" class="btn">Ver Oferta no Mercado Livre</a>
-      </div>
+  <!-- CONTEÚDO PRINCIPAL (SUBPASTAS DE CALCULADORAS) -->
+  <main>
+    <div class="section-title">
+      <h1 id="nicho-titulo">Ferramentas Disponíveis</h1>
+      <p id="nicho-desc">Escolha uma calculadora abaixo para realizar seus cálculos gratuitamente.</p>
     </div>
-  </div>
+
+    <div class="grid-calculadoras">
+      
+      <!-- Calculadora 1: Salário Líquido -->
+      <a href="#" class="calc-card" data-nicho="trabalho financas">
+        <div>
+          <div class="calc-icon">💼</div>
+          <h3>Salário Líquido</h3>
+          <p>Calcule os descontos oficiais de INSS e IRPF para saber exatamente quanto recebe no mês.</p>
+        </div>
+        <span class="tag">Abrir ferramenta &rarr;</span>
+      </a>
+
+      <!-- Calculadora 2: Rescisão -->
+      <a href="#" class="calc-card" data-nicho="trabalho">
+        <div>
+          <div class="calc-icon">📋</div>
+          <h3>Rescisão Trabalhista</h3>
+          <p>Estimativa completa de aviso prévio, FGTS, férias e proporcional de 13º salário.</p>
+        </div>
+        <span class="tag">Abrir ferramenta &rarr;</span>
+      </a>
+
+      <!-- Calculadora 3: Juros Compostos -->
+      <a href="#" class="calc-card" data-nicho="financas">
+        <div>
+          <div class="calc-icon">📈</div>
+          <h3>Juros Compostos</h3>
+          <p>Simule a evolução dos seus investimentos e aportes mensais no longo prazo.</p>
+        </div>
+        <span class="tag">Abrir ferramenta &rarr;</span>
+      </a>
+
+      <!-- Calculadora 4: IMC & Calorias -->
+      <a href="#" class="calc-card" data-nicho="saude">
+        <div>
+          <div class="calc-icon">⚖️</div>
+          <h3>IMC e Gasto Calórico</h3>
+          <p>Descubra seu Índice de Massa Corporal e a taxa metabólica basal diária.</p>
+        </div>
+        <span class="tag">Abrir ferramenta &rarr;</span>
+      </a>
+
+      <!-- Calculadora 5: Consumo de Energia -->
+      <a href="#" class="calc-card" data-nicho="utilidades">
+        <div>
+          <div class="calc-icon">⚡</div>
+          <h3>Consumo de Energia</h3>
+          <p>Calcule quanto um eletrodoméstico custa na sua conta de luz por mês em R$.</p>
+        </div>
+        <span class="tag">Abrir ferramenta &rarr;</span>
+      </a>
+
+    </div>
+
+    <!-- SEÇÃO DE RECOMENDAÇÕES (SEUS LINKS DE AFILIADO) -->
+    <section class="products-section">
+      <h3>Recomendações Úteis para Você</h3>
+      <p style="color: var(--text-sub); font-size: 0.85rem;">Itens selecionados para ajudar na sua organização do dia a dia.</p>
+      
+      <div class="products-grid">
+        <div class="product-card">
+          <img src="https://http2.mlstatic.com/D_NQ_NP_2X_736376-MLA72084606132_102023-F.webp" alt="Planner Financeiro">
+          <h4>Planner de Organização</h4>
+          <a href="https://www.mercadolivre.com.br" target="_blank" class="btn-buy">Ver no Mercado Livre</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer>
-    &copy; Sem Link. Todos os direitos reservados.
+    &copy; Sem Link. Ferramentas gratuitas e utilidades do dia a dia.
   </footer>
 
+  <!-- SCRIPT PARA FILTRAR AS CALCULADORAS PELO CABEÇALHO -->
+  <script>
+    function filtrarNicho(nicho, botao) {
+      // Atualizar classe ativa do botão
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      botao.classList.add('active');
+
+      // Filtrar os cards de calculadoras
+      const cards = document.querySelectorAll('.calc-card');
+      cards.forEach(card => {
+        const nichosDoCard = card.getAttribute('data-nicho').split(' ');
+        if (nicho === 'todos' || nichosDoCard.includes(nicho)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
 </body>
 </html>
