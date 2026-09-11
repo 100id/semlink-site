@@ -1,1 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEMLINK | Simulador de Juros Compostos</title>
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=SEU_ID_G_AQUI"></script>
+    <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
+  gtag('config', 'SEU_ID_G_AQUI');
+    </script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-sub: #475569;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --border: #e2e8f0;
+      --green: #16a34a;
+      --panel-bg: #f1f5f9;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Cabeçalho Simplificado */
+    header { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 1.25rem 2rem; }
+    .header-container { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.25rem; font-weight: 800; color: var(--text-main); text-decoration: none; letter-spacing: -0.5px; }
+    
+    /* Menu Apenas Finanças */
+    .nav-badge { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 600; font-size: 0.85rem; }
+
+    /* Layout em 2 Colunas (Diferenciado) */
+    main { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; flex: 1; width: 100%; }
+    
+    .calc-container { 
+      background: var(--card-bg); 
+      border: 1px solid var(--border); 
+      border-radius: 16px; 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 2rem; 
+      padding: 2rem; 
+      box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05); 
+    }
+
+    @media (max-width: 768px) {
+      .calc-container { grid-template-columns: 1fr; }
+    }
+
+    .calc-header { margin-bottom: 1.5rem; }
+    .calc-header h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .calc-header p { font-size: 0.875rem; color: var(--text-sub); }
+
+    /* Formulário */
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .form-group input { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus { border-color: var(--accent); }
+
+    .btn-calc { width: 100%; background: var(--accent); color: white; border: none; padding: 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; }
+    .btn-calc:hover { background: var(--accent-hover); }
+
+    /* Painel do Resultado Lateral */
+    .result-panel { background: var(--panel-bg); border-radius: 12px; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border); }
+    .result-title { font-size: 1rem; font-weight: 700; color: var(--text-sub); margin-bottom: 1rem; }
+    
+    .main-val { font-size: 2rem; font-weight: 800; color: var(--green); margin-bottom: 1.5rem; }
+    .main-val span { font-size: 0.85rem; display: block; color: var(--text-sub); font-weight: 500; }
+
+    .stat-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-val { font-weight: 600; }
+
+    /* Vitrine Simplificada */
+    .product-box { margin-top: 2rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .product-box img { max-width: 120px; height: auto; margin-bottom: 0.5rem; }
+    .btn-buy { display: inline-block; background: var(--accent); color: white; text-decoration: none; padding: 0.5rem 1.25rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; margin-top: 0.75rem; }
+
+    footer { text-align: center; padding: 1.5rem; font-size: 0.85rem; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--card-bg); margin-top: auto; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <a href="index.html" class="logo">SEMLINK</a>
+      <span class="nav-badge">Finanças</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="calc-container">
+      
+      <!-- COLUNA 1: Form e Entradas -->
+      <div>
+        <div class="calc-header">
+          <h1>Simulador de Juros Compostos</h1>
+          <p>Projete o crescimento do seu patrimônio com aportes mensais.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Aporte Inicial (R$)</label>
+          <input type="number" id="valorInicial" placeholder="Ex: 1000" step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label>Aporte Mensal (R$)</label>
+          <input type="number" id="valorMensal" placeholder="Ex: 200" step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label>Taxa de Juros Anual (%)</label>
+          <input type="number" id="taxaJuros" placeholder="Ex: 10" step="0.1">
+        </div>
+
+        <div class="form-group">
+          <label>Período (Anos)</label>
+          <input type="number" id="anos" placeholder="Ex: 5" min="1">
+        </div>
+
+        <button class="btn-calc" onclick="calcularJuros()">Calcular Resultado</button>
+      </div>
+
+      <!-- COLUNA 2: Resultado Lateral -->
+      <div class="result-panel">
+        <div>
+          <div class="result-title">Projeção Final</div>
+          <div class="main-val" id="totalFinal">R$ 0,00 <span>Valor acumulado total</span></div>
+
+          <div class="stat-row">
+            <span>Total Investido:</span>
+            <span class="stat-val" id="totalInvestido">R$ 0,00</span>
+          </div>
+
+          <div class="stat-row">
+            <span>Total em Juros:</span>
+            <span class="stat-val" id="totalJuros" style="color: var(--green);">R$ 0,00</span>
+          </div>
+        </div>
+
+        <p style="font-size: 0.75rem; color: var(--text-sub); margin-top: 1rem;">
+          *Cálculo considerou rentabilidade mensal composta constante.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- VITRINE RELEVANTE -->
+    <div class="product-box">
+      <h3>Organize seus Investimentos</h3>
+      <p style="font-size: 0.85rem; color: var(--text-sub);">Controle seus aportes e metas financeiras em um só lugar.</p>
+      <a href="https://www.mercadolivre.com.br" target="_blank" class="btn-buy">Ver no Mercado Livre</a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; SEMLINK — Ferramentas e calculadoras financeiras.
+  </footer>
+
+  <script>
+    function calcularJuros() {
+      const p = parseFloat(document.getElementById('valorInicial').value) || 0;
+      const pm = parseFloat(document.getElementById('valorMensal').value) || 0;
+      const taxaAnual = parseFloat(document.getElementById('taxaJuros').value) || 0;
+      const anos = parseInt(document.getElementById('anos').value) || 0;
+
+      if (anos <= 0 || (p <= 0 && pm <= 0)) {
+        alert("Preencha os valores para realizar o cálculo.");
+        return;
+      }
+
+      const meses = anos * 12;
+      const i = Math.pow(1 + (taxaAnual / 100), 1/12) - 1; // Conversão da taxa anual para mensal equivalente
+
+      let montante = p;
+      let totalInvestido = p;
+
+      for (let m = 0; m < meses; m++) {
+        montante = (montante + pm) * (1 + i);
+        totalInvestido += pm;
+      }
+
+      const totalJuros = montante - totalInvestido;
+
+      // Formatação para Moeda R$
+      document.getElementById('totalFinal').innerHTML = `${montante.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} <span>Valor acumulado total</span>`;
+      document.getElementById('totalInvestido').innerText = totalInvestido.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      document.getElementById('totalJuros').innerText = totalJuros.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+  </script>
+</body>
+</html>

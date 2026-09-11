@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Salário Líquido | Sem Link</title>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --card-bg: #ffffff;
+      --text-main: #1a1a1a;
+      --text-sub: #666666;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --border: #e5e7eb;
+      --green: #16a34a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+    header { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 1rem 2rem; }
+    .header-container { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.25rem; font-weight: 700; color: var(--text-main); text-decoration: none; }
+
+    main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; flex: 1; width: 100%; }
+    .back-link { display: inline-block; margin-bottom: 1rem; color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+    
+    .calc-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-main); }
+    .form-group input { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; outline: none; }
+    .form-group input:focus { border-color: var(--accent); }
+
+    .btn-calc { width: 100%; background: var(--accent); color: #fff; border: none; padding: 0.85rem; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-calc:hover { background: var(--accent-hover); }
+
+    .result-box { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: none; }
+    .result-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.95rem; }
+    .result-row.total { font-size: 1.2rem; font-weight: 700; color: var(--green); margin-top: 1rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
+
+    /* Produtos de Afiliado */
+    .products-section { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .product-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+    .product-card img { width: 100%; height: 130px; object-fit: contain; margin-bottom: 0.5rem; }
+    .product-card h4 { font-size: 0.85rem; margin-bottom: 0.5rem; }
+    .btn-buy { display: block; background: var(--accent); color: white; text-decoration: none; padding: 0.4rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <a href="../index.html" class="logo">Sem Link</a>
+    </div>
+  </header>
+
+  <main>
+    <a href="../index.html" class="back-link">&larr; Voltar para todas as calculadoras</a>
+
+    <div class="calc-box">
+      <h2>Calculadora de Salário Líquido</h2>
+      <p style="color: var(--text-sub); font-size: 0.9rem; margin-bottom: 1.5rem;">Informe os dados abaixo para simular os descontos oficiais.</p>
+
+      <div class="form-group">
+        <label>Salário Bruto (R$)</label>
+        <input type="number" id="salarioBruto" placeholder="Ex: 3000" step="0.01">
+      </div>
+
+      <div class="form-group">
+        <label>Número de Dependentes</label>
+        <input type="number" id="dependentes" value="0" min="0">
+      </div>
+
+      <div class="form-group">
+        <label>Outros Descontos (R$)</label>
+        <input type="number" id="outrosDescontos" value="0" step="0.01">
+      </div>
+
+      <button class="btn-calc" onclick="calcular()">Calcular Salário Líquido</button>
+
+      <div class="result-box" id="resultados">
+        <div class="result-row">
+          <span>Desconto INSS:</span>
+          <span id="descINSS">R$ 0,00</span>
+        </div>
+        <div class="result-row">
+          <span>Desconto IRPF:</span>
+          <span id="descIRPF">R$ 0,00</span>
+        </div>
+        <div class="result-row total">
+          <span>Salário Líquido:</span>
+          <span id="valLiquido">R$ 0,00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECOMENDAÇÕES RELEVANTES -->
+    <section class="products-section">
+      <h3>Organize o seu orçamento</h3>
+      <p style="color: var(--text-sub); font-size: 0.85rem;">Ferramentas de planejamento financeiro pessoal:</p>
+      
+      <div class="products-grid">
+        <div class="product-card">
+          <img src="https://http2.mlstatic.com/D_NQ_NP_2X_736376-MLA72084606132_102023-F.webp" alt="Planner Financeiro">
+          <h4>Planner de Controle Financeiro</h4>
+          <a href="https://www.mercadolivre.com.br" target="_blank" class="btn-buy">Ver no Mercado Livre</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function calcular() {
+      const bruto = parseFloat(document.getElementById('salarioBruto').value) || 0;
+      const dependentes = parseInt(document.getElementById('dependentes').value) || 0;
+      const outros = parseFloat(document.getElementById('outrosDescontos').value) || 0;
+
+      if (bruto <= 0) {
+        alert("Por favor, digite um valor válido de Salário Bruto.");
+        return;
+      }
+
+      // INSS
+      let inss = 0;
+      if (bruto <= 1412.00) inss = bruto * 0.075;
+      else if (bruto <= 2666.68) inss = (bruto * 0.09) - 21.18;
+      else if (bruto <= 4000.03) inss = (bruto * 0.12) - 101.18;
+      else if (bruto <= 7786.02) inss = (bruto * 0.14) - 181.18;
+      else inss = 908.86;
+
+      // IRPF
+      const baseIRPF = bruto - inss - (dependentes * 189.59);
+      let irpf = 0;
+      if (baseIRPF > 2259.20 && baseIRPF <= 2826.65) irpf = (baseIRPF * 0.075) - 169.44;
+      else if (baseIRPF > 2826.65 && baseIRPF <= 3751.05) irpf = (baseIRPF * 0.15) - 381.44;
+      else if (baseIRPF > 3751.05 && baseIRPF <= 4664.68) irpf = (baseIRPF * 0.225) - 662.77;
+      else if (baseIRPF > 4664.68) irpf = (baseIRPF * 0.275) - 896.00;
+
+      if (irpf < 0) irpf = 0;
+
+      const liquido = bruto - inss - irpf - outros;
+
+      document.getElementById('descINSS').innerText = `R$ ${inss.toFixed(2)}`;
+      document.getElementById('descIRPF').innerText = `R$ ${irpf.toFixed(2)}`;
+      document.getElementById('valLiquido').innerText = `R$ ${liquido.toFixed(2)}`;
+      document.getElementById('resultados').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
