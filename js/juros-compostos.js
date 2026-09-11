@@ -185,3 +185,33 @@ function renderizar3Cenarios(p, pm, meses, pctAumentoAnual) {
 function formatarMoeda(valor) {
   return (parseFloat(valor) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
+
+// Funções para os botões "E se?"
+function adicionarAporte(valorExtra) {
+  const inputAporte = document.getElementById('valorMensal');
+  const valorAtual = parseFloat(inputAporte.value) || 0;
+  const novoValor = valorAtual + valorExtra;
+  
+  inputAporte.value = novoValor;
+  sincronizarAporteInput();
+}
+
+function adicionarAnos(anosExtras) {
+  const inputAnos = document.getElementById('anos');
+  const valorAtual = parseInt(inputAnos.value) || 0;
+  const novoValor = valorAtual + anosExtras;
+  
+  inputAnos.value = novoValor;
+  sincronizarAnosInput();
+}
+
+function resetarSimulacao() {
+  document.getElementById('valorInicial').value = 1000;
+  document.getElementById('valorMensal').value = 500;
+  document.getElementById('taxaJuros').value = 10;
+  document.getElementById('anos').value = 20;
+  document.getElementById('aumentoAnual').value = 0;
+  
+  sincronizarAporteInput();
+  sincronizarAnosInput();
+}

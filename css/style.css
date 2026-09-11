@@ -200,3 +200,41 @@ footer { text-align: center; padding: 1.5rem; font-size: 0.85rem; color: var(--t
     padding: 1rem;
   }
 }
+
+/* Botões de Simulação Rápida (E se?) */
+.quick-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.btn-quick {
+  flex: 1;
+  min-width: 100px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-quick:hover {
+  background: #eff6ff;
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.btn-quick.btn-reset {
+  color: var(--text-sub);
+  background: #ffffff;
+}
+
+.btn-quick.btn-reset:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
