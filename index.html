@@ -3,26 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SEMLINK | Simulador de Juros Compostos</title>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KX9CHEKLP1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+  
+  <!-- SEO Meta Tags -->
+  <title>Simulador de Juros Compostos Online e Grátis | SEMLINK</title>
+  <meta name="description" content="Simule o crescimento do seu patrimônio com a Calculadora de Juros Compostos do SEMLINK. Calcule rendimentos, aportes mensais e projeções de investimento facilmente.">
+  <meta name="keywords" content="juros compostos, simulador de investimentos, calcular juros compostos, renda fixa, aportes mensais">
+  <link rel="canonical" href="https://semlink.com.br/">
 
-        gtag('config', 'G-KX9CHEKLP1');
-    </script>
+  <!-- Open Graph / Redes Sociais -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Simulador de Juros Compostos | SEMLINK">
+  <meta property="og:description" content="Projete a evolução dos seus investimentos com aportes mensais de forma simples e rápida.">
+  <meta property="og:url" content="https://semlink.com.br/">
 
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KX9CHEKLP1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-KX9CHEKLP1');
+  </script>
 
-    <!-- Microsoft Clarity -->
-    <script type="text/javascript">
-     (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-     })(window, document, "clarity", "script", "ygrd9js45z");
-    </script>
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "ygrd9js45z");
+  </script>
+
   <style>
     :root {
       --bg: #f8fafc;
@@ -39,15 +50,14 @@
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* Cabeçalho Simplificado */
+    /* Cabeçalho */
     header { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 1.25rem 2rem; }
     .header-container { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
     .logo { font-size: 1.25rem; font-weight: 800; color: var(--text-main); text-decoration: none; letter-spacing: -0.5px; }
     
-    /* Menu Apenas Finanças */
     .nav-badge { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 600; font-size: 0.85rem; }
 
-    /* Layout em 2 Colunas (Diferenciado) */
+    /* Layout */
     main { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; flex: 1; width: 100%; }
     
     .calc-container { 
@@ -78,7 +88,7 @@
     .btn-calc { width: 100%; background: var(--accent); color: white; border: none; padding: 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; }
     .btn-calc:hover { background: var(--accent-hover); }
 
-    /* Painel do Resultado Lateral */
+    /* Painel do Resultado */
     .result-panel { background: var(--panel-bg); border-radius: 12px; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border); }
     .result-title { font-size: 1rem; font-weight: 700; color: var(--text-sub); margin-bottom: 1rem; }
     
@@ -89,12 +99,16 @@
     .stat-row:last-child { border-bottom: none; }
     .stat-val { font-weight: 600; }
 
-    /* Vitrine Simplificada */
-    .product-box { margin-top: 2rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
-    .product-box img { max-width: 120px; height: auto; margin-bottom: 0.5rem; }
+    /* Conteúdo SEO de Apoio */
+    .seo-content { margin-top: 2rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; line-height: 1.6; }
+    .seo-content h2 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .seo-content p { font-size: 0.875rem; color: var(--text-sub); margin-bottom: 1rem; }
+
+    /* Vitrine Monetização */
+    .product-box { margin-top: 1.5rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
     .btn-buy { display: inline-block; background: var(--accent); color: white; text-decoration: none; padding: 0.5rem 1.25rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; margin-top: 0.75rem; }
 
-    footer { text-align: center; padding: 1.5rem; font-size: 0.85rem; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--card-bg); margin-top: auto; }
+    footer { text-align: center; padding: 1.5rem; font-size: 0.85rem; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--card-bg); margin-top: 2rem; }
   </style>
 </head>
 <body>
@@ -109,7 +123,7 @@
   <main>
     <div class="calc-container">
       
-      <!-- COLUNA 1: Form e Entradas -->
+      <!-- COLUNA 1: Formulário -->
       <div>
         <div class="calc-header">
           <h1>Simulador de Juros Compostos</h1>
@@ -117,22 +131,22 @@
         </div>
 
         <div class="form-group">
-          <label>Aporte Inicial (R$)</label>
+          <label for="valorInicial">Aporte Inicial (R$)</label>
           <input type="number" id="valorInicial" placeholder="Ex: 1000" step="0.01">
         </div>
 
         <div class="form-group">
-          <label>Aporte Mensal (R$)</label>
+          <label for="valorMensal">Aporte Mensal (R$)</label>
           <input type="number" id="valorMensal" placeholder="Ex: 200" step="0.01">
         </div>
 
         <div class="form-group">
-          <label>Taxa de Juros Anual (%)</label>
+          <label for="taxaJuros">Taxa de Juros Anual (%)</label>
           <input type="number" id="taxaJuros" placeholder="Ex: 10" step="0.1">
         </div>
 
         <div class="form-group">
-          <label>Período (Anos)</label>
+          <label for="anos">Período (Anos)</label>
           <input type="number" id="anos" placeholder="Ex: 5" min="1">
         </div>
 
@@ -163,11 +177,20 @@
 
     </div>
 
-    <!-- VITRINE RELEVANTE -->
+    <!-- CONTEÚDO SEO (Essencial para ranquear no Google) -->
+    <article class="seo-content">
+      <h2>O que são Juros Compostos?</h2>
+      <p>Os juros compostos são os "juros sobre juros". Ao contrário dos juros simples, o rendimento de cada período é somado ao montante principal, fazendo com que o crescimento do seu patrimônio seja exponencial ao longo do tempo.</p>
+      
+      <h2>Como funciona a calculadora?</h2>
+      <p>Nossa ferramenta converte a taxa de juros anual informada para uma taxa mensal equivalente e projeta a evolução dos seus aportes mês a mês durante o período selecionado.</p>
+    </article>
+
+    <!-- VITRINE DE MONETIZAÇÃO -->
     <div class="product-box">
       <h3>Organize seus Investimentos</h3>
       <p style="font-size: 0.85rem; color: var(--text-sub);">Controle seus aportes e metas financeiras em um só lugar.</p>
-      <a href="https://www.mercadolivre.com.br" target="_blank" class="btn-buy">Ver no Mercado Livre</a>
+      <a href="https://www.mercadolivre.com.br" target="_blank" rel="noopener noreferrer" class="btn-buy">Ver no Mercado Livre</a>
     </div>
   </main>
 
@@ -188,7 +211,7 @@
       }
 
       const meses = anos * 12;
-      const i = Math.pow(1 + (taxaAnual / 100), 1/12) - 1; // Conversão da taxa anual para mensal equivalente
+      const i = Math.pow(1 + (taxaAnual / 100), 1/12) - 1;
 
       let montante = p;
       let totalInvestido = p;
@@ -200,7 +223,6 @@
 
       const totalJuros = montante - totalInvestido;
 
-      // Formatação para Moeda R$
       document.getElementById('totalFinal').innerHTML = `${montante.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} <span>Valor acumulado total</span>`;
       document.getElementById('totalInvestido').innerText = totalInvestido.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       document.getElementById('totalJuros').innerText = totalJuros.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
