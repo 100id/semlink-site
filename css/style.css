@@ -166,3 +166,37 @@ main {
 .btn-buy { display: inline-block; background: var(--accent); color: white; text-decoration: none; padding: 0.5rem 1.25rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; margin-top: 0.75rem; }
 
 footer { text-align: center; padding: 1.5rem; font-size: 0.85rem; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--card-bg); margin-top: 2rem; }
+
+/* Container que permite rolagem horizontal suave no celular */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tabela responsiva */
+.scenario-table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  font-size: 0.85rem; 
+  text-align: left; 
+  white-space: nowrap; /* Evita quebra de linha feia nos números */
+}
+
+.scenario-table th, .scenario-table td { 
+  padding: 0.65rem 0.5rem; 
+  border-bottom: 1px solid var(--border); 
+}
+
+/* Ajustes de fonte e espaçamento para celulares */
+@media (max-width: 600px) {
+  .scenario-table {
+    font-size: 0.75rem;
+  }
+  .scenario-table th, .scenario-table td {
+    padding: 0.5rem 0.3rem;
+  }
+  .section-box {
+    padding: 1rem;
+  }
+}
