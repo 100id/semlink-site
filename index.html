@@ -15,6 +15,9 @@
   <meta property="og:description" content="Simule seu patrimônio com gráficos interativos, cenários de rentabilidade e metas financeiras.">
   <meta property="og:url" content="https://semlink.com.br/">
 
+  <!-- Arquivo CSS Externo (Boas Práticas) -->
+  <link rel="stylesheet" href="css/style.css">
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KX9CHEKLP1"></script>
   <script>
@@ -35,125 +38,20 @@
 
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-sub: #475569;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --border: #e2e8f0;
-      --green: #16a34a;
-      --panel-bg: #f1f5f9;
-      --purple: #9333ea;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
-
-    /* Header & Navegação Preparada para Futuras Calculadoras */
-    header { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 1rem 2rem; sticky: top; }
-    .header-container { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 1.25rem; font-weight: 800; color: var(--text-main); text-decoration: none; letter-spacing: -0.5px; }
-    
-    .nav-menu { display: flex; gap: 0.5rem; }
-    .nav-item { text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-sub); transition: 0.2s; }
-    .nav-item.active, .nav-item:hover { background: #eff6ff; color: var(--accent); }
-
-    main { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; flex: 1; width: 100%; }
-    
-    /* Grid Principal */
-    .calc-container { 
-      background: var(--card-bg); 
-      border: 1px solid var(--border); 
-      border-radius: 16px; 
-      display: grid; 
-      grid-template-columns: 1fr 1fr; 
-      gap: 2rem; 
-      padding: 2rem; 
-      box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05); 
-    }
-
-    @media (max-width: 850px) {
-      .calc-container { grid-template-columns: 1fr; }
-    }
-
-    /* Alternador de Modos (Tabs) */
-    .calc-tabs { display: flex; background: var(--panel-bg); padding: 0.25rem; border-radius: 10px; margin-bottom: 1.5rem; border: 1px solid var(--border); }
-    .tab-btn { flex: 1; border: none; padding: 0.6rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; background: transparent; color: var(--text-sub); transition: 0.2s; }
-    .tab-btn.active { background: var(--card-bg); color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-
-    .calc-header h1 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.25rem; }
-    .calc-header p { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 1rem; }
-
-    /* Inputs e Sliders */
-    .form-group { margin-bottom: 1rem; }
-    .label-box { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
-    .form-group input[type="number"] { width: 100%; padding: 0.65rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; outline: none; }
-    .form-group input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; margin-top: 0.3rem; }
-
-    /* Painel do Resultado Lateral */
-    .result-panel { background: var(--panel-bg); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border); }
-    .result-title { font-size: 0.9rem; font-weight: 700; color: var(--text-sub); margin-bottom: 0.5rem; }
-    .main-val { font-size: 2rem; font-weight: 800; color: var(--green); margin-bottom: 1rem; }
-    .main-val span { font-size: 0.85rem; display: block; color: var(--text-sub); font-weight: 500; }
-
-    .stat-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
-    .stat-row:last-child { border-bottom: none; }
-    .stat-val { font-weight: 600; }
-
-    /* Destaques e Gatilhos Visuais */
-    .time-effect-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.8rem; margin-top: 1rem; font-size: 0.8rem; color: #166534; line-height: 1.4; }
-
-    /* Seções de Recursos (Gráficos, Cenários, etc) */
-    .section-box { margin-top: 1.5rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
-    .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
-
-    /* Tabela de Cenários */
-    .scenario-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
-    .scenario-table th, .scenario-table td { padding: 0.65rem; border-bottom: 1px solid var(--border); }
-    .scenario-table th { background: var(--panel-bg); color: var(--text-sub); }
-
-    /* Cards 3 Cenários */
-    .scenarios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
-    .sc-card { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; border-top: 4px solid var(--accent); }
-    .sc-card.mod { border-top-color: var(--accent); }
-    .sc-card.cons { border-top-color: var(--green); }
-    .sc-card.agres { border-top-color: var(--purple); }
-    .sc-card h4 { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 0.3rem; }
-    .sc-card .val { font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
-
-    /* SEO & Monetização */
-    .seo-content { line-height: 1.6; }
-    .seo-content h2 { font-size: 1.1rem; margin-top: 1rem; margin-bottom: 0.4rem; }
-    .seo-content p { font-size: 0.875rem; color: var(--text-sub); }
-
-    .product-box { text-align: center; }
-    .btn-buy { display: inline-block; background: var(--accent); color: white; text-decoration: none; padding: 0.5rem 1.25rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; margin-top: 0.75rem; }
-
-    footer { text-align: center; padding: 1.5rem; font-size: 0.85rem; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--card-bg); margin-top: 2rem; }
-  </style>
 </head>
 <body>
 
   <header>
     <div class="header-container">
       <a href="index.html" class="logo">SEMLINK</a>
-      <!-- Menu Preparado para Expansão Futura -->
       <nav class="nav-menu">
         <a href="index.html" class="nav-item active">Juros Compostos</a>
-        <!-- Próximas calculadoras ficarão aqui -->
-        <!-- <a href="salario-liquido.html" class="nav-item">Salário Líquido</a> -->
       </nav>
     </div>
   </header>
 
   <main>
     <div class="calc-container">
-      
-      <!-- COLUNA 1: Formulário e Sliders -->
       <div>
         <div class="calc-tabs">
           <button class="tab-btn active" onclick="setModo('quantoVouTer')">Quanto vou ter?</button>
@@ -165,7 +63,6 @@
           <p id="calcDesc">Projete o crescimento do seu patrimônio em tempo real.</p>
         </div>
 
-        <!-- Inputs Modo 1: Quanto Vou Ter -->
         <div id="modoQuantoVouTer">
           <div class="form-group">
             <div class="label-box"><span>Aporte Inicial (R$)</span></div>
@@ -178,12 +75,10 @@
               <span id="labelAporteSlider">R$ 500</span>
             </div>
             <input type="number" id="valorMensal" value="500" oninput="sincronizarAporteInput()">
-            <!-- Slider (Recurso 4) -->
             <input type="range" id="sliderAporte" min="0" max="10000" step="50" value="500" oninput="sincronizarAporteSlider()">
           </div>
         </div>
 
-        <!-- Inputs Modo 2: Quanto Preciso Investir (Recurso 3) -->
         <div id="modoQuantoInvestir" style="display: none;">
           <div class="form-group">
             <div class="label-box"><span>Meta de Patrimônio (R$)</span></div>
@@ -191,11 +86,8 @@
           </div>
         </div>
 
-        <!-- Inputs Comuns -->
         <div class="form-group">
-          <div class="label-box">
-            <span>Taxa de Juros Anual (%)</span>
-          </div>
+          <div class="label-box"><span>Taxa de Juros Anual (%)</span></div>
           <input type="number" id="taxaJuros" value="10" step="0.1" oninput="atualizarECalcular()">
         </div>
 
@@ -210,42 +102,37 @@
 
         <div class="form-group">
           <div class="label-box"><span>Aumento Anual do Aporte (%, Opcional)</span></div>
-          <input type="number" id="aumentoAnual" value="0" step="0.5" placeholder="Ex: 5% (acompanhar inflação)" oninput="atualizarECalcular()">
+          <input type="number" id="aumentoAnual" value="0" step="0.5" placeholder="Ex: 5%" oninput="atualizarECalcular()">
         </div>
       </div>
 
-      <!-- COLUNA 2: Painel de Resultados Lateral -->
       <div class="result-panel">
         <div>
           <div class="result-title" id="resTitle">Projeção Final</div>
           <div class="main-val" id="totalFinal">R$ 0,00 <span>Valor acumulado total</span></div>
 
           <div class="stat-row">
-            <span id="lblStat1">Total Investido:</span>
+            <span>Total Investido:</span>
             <span class="stat-val" id="totalInvestido">R$ 0,00</span>
           </div>
 
           <div class="stat-row">
-            <span id="lblStat2">Total em Juros:</span>
+            <span>Total em Juros:</span>
             <span class="stat-val" id="totalJuros" style="color: var(--green);">R$ 0,00</span>
           </div>
         </div>
 
-        <!-- Gatilho "Efeito do Tempo" (Recurso 5) -->
         <div class="time-effect-card" id="cardEfeitoTempo">
           🚀 <strong>O Efeito do Tempo:</strong> Carregando dados...
         </div>
       </div>
-
     </div>
 
-    <!-- RECURSO 1: Gráfico Interativo Mês a Mês -->
     <div class="section-box">
       <h2 class="section-title">Evolução do Patrimônio Mês a Mês</h2>
       <canvas id="meuGrafico" style="max-height: 380px;"></canvas>
     </div>
 
-    <!-- RECURSO 8: Seu Dinheiro em 3 Cenários (Conservador, Moderado, Agressivo) -->
     <div class="section-box">
       <h2 class="section-title">Seu Dinheiro em 3 Cenários de Rentabilidade</h2>
       <div class="scenarios-grid">
@@ -264,7 +151,6 @@
       </div>
     </div>
 
-    <!-- RECURSO 2: Comparação de Cenários de Aporte -->
     <div class="section-box">
       <h2 class="section-title">Comparativo: O Poder de Aumentar seu Aporte</h2>
       <table class="scenario-table">
@@ -276,22 +162,18 @@
             <th>Total Acumulado</th>
           </tr>
         </thead>
-        <tbody id="tbodyCenarios">
-          <!-- Gerado via JS -->
-        </tbody>
+        <tbody id="tbodyCenarios"></tbody>
       </table>
     </div>
 
-    <!-- SEO CONTENT -->
     <article class="section-box seo-content">
       <h2>Como funcionam os Juros Compostos?</h2>
-      <p>Os juros compostos representam a rentabilidade calculada sobre o capital inicial acrescido dos juros acumulados nos períodos anteriores. É o famoso conceito de "juros sobre juros", essencial para a construção de patrimônio no longo prazo.</p>
+      <p>Os juros compostos representam a rentabilidade calculada sobre o capital inicial acrescido dos juros acumulados nos períodos anteriores.</p>
 
       <h2>Por que utilizar o simulador do SEMLINK?</h2>
-      <p>Nossa ferramenta permite testar cenários realistas considerando aumentos anuais de aporte, comparação de perfis de risco e calculando a meta exata necessária para atingir a sua independência financeira.</p>
+      <p>Nossa ferramenta permite testar cenários realistas considerando aumentos anuais de aporte e calculando metas exatas.</p>
     </article>
 
-    <!-- MONETIZAÇÃO -->
     <div class="section-box product-box">
       <h3>Organize sua Vida Financeira</h3>
       <p style="font-size: 0.85rem; color: var(--text-sub);">Acompanhe seus investimentos e projeções em planilhas e livros recomendados.</p>
@@ -303,210 +185,7 @@
     &copy; SEMLINK — Ferramentas e calculadoras financeiras.
   </footer>
 
-  <!-- SCRIPT MODULAR DA CALCULADORA -->
-  <script>
-    let modoAtual = 'quantoVouTer';
-    let chartInstance = null;
-
-    // Inicialização ao carregar a página
-    document.addEventListener("DOMContentLoaded", () => {
-      atualizarECalcular();
-    });
-
-    // Alternar Modos
-    function setModo(modo) {
-      modoAtual = modo;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      
-      if(modo === 'quantoVouTer') {
-        event.target.classList.add('active');
-        document.getElementById('modoQuantoVouTer').style.display = 'block';
-        document.getElementById('modoQuantoInvestir').style.display = 'none';
-        document.getElementById('calcTitle').innerText = 'Simulador de Juros Compostos';
-        document.getElementById('calcDesc').innerText = 'Projete o crescimento do seu patrimônio em tempo real.';
-        document.getElementById('resTitle').innerText = 'Projeção Final';
-      } else {
-        event.target.classList.add('active');
-        document.getElementById('modoQuantoVouTer').style.display = 'none';
-        document.getElementById('modoQuantoInvestir').style.display = 'block';
-        document.getElementById('calcTitle').innerText = 'Calculadora de Meta Financeira';
-        document.getElementById('calcDesc').innerText = 'Descubra quanto precisa investir por mês para chegar ao seu objetivo.';
-        document.getElementById('resTitle').innerText = 'Aporte Mensal Necessário';
-      }
-      atualizarECalcular();
-    }
-
-    // Sincronização de Sliders e Inputs
-    function sincronizarAporteInput() {
-      const val = document.getElementById('valorMensal').value;
-      document.getElementById('sliderAporte').value = val;
-      document.getElementById('labelAporteSlider').innerText = formatarMoeda(val);
-      atualizarECalcular();
-    }
-
-    function sincronizarAporteSlider() {
-      const val = document.getElementById('sliderAporte').value;
-      document.getElementById('valorMensal').value = val;
-      document.getElementById('labelAporteSlider').innerText = formatarMoeda(val);
-      atualizarECalcular();
-    }
-
-    function sincronizarAnosInput() {
-      const val = document.getElementById('anos').value;
-      document.getElementById('sliderAnos').value = val;
-      document.getElementById('labelAnosSlider').innerText = `${val} anos`;
-      atualizarECalcular();
-    }
-
-    function sincronizarAnosSlider() {
-      const val = document.getElementById('sliderAnos').value;
-      document.getElementById('anos').value = val;
-      document.getElementById('labelAnosSlider').innerText = `${val} anos`;
-      atualizarECalcular();
-    }
-
-    // MOTOR DE CÁLCULO PRINCIPAL
-    function atualizarECalcular() {
-      const p = parseFloat(document.getElementById('valorInicial').value) || 0;
-      const taxaAnual = parseFloat(document.getElementById('taxaJuros').value) || 0;
-      const anos = parseInt(document.getElementById('anos').value) || 1;
-      const pctAumentoAnual = parseFloat(document.getElementById('aumentoAnual').value) || 0;
-      const meses = anos * 12;
-      const iMensal = Math.pow(1 + (taxaAnual / 100), 1/12) - 1;
-
-      if (modoAtual === 'quantoVouTer') {
-        const pm = parseFloat(document.getElementById('valorMensal').value) || 0;
-        const res = simularCrescimento(p, pm, iMensal, meses, pctAumentoAnual);
-        
-        // Exibe Resultados
-        document.getElementById('totalFinal').innerHTML = `${formatarMoeda(res.totalFinal)} <span>Valor acumulado total</span>`;
-        document.getElementById('totalInvestido').innerText = formatarMoeda(res.totalInvestido);
-        document.getElementById('totalJuros').innerText = formatarMoeda(res.totalJuros);
-
-        // Atualiza Gráfico Mês a Mês
-        renderizarGrafico(res.labelsMeses, res.dadosInvestido, res.dadosJuros);
-        
-        // Atualiza Efeito do Tempo
-        const jurosUltimosAnos = res.dadosJuros[res.dadosJuros.length - 1] - (res.dadosJuros[Math.floor(res.dadosJuros.length * 0.75)] || 0);
-        document.getElementById('cardEfeitoTempo').innerHTML = `🚀 <strong>O Efeito do Tempo:</strong> Nos últimos 25% do período (${Math.round(anos*0.25)} anos), seus juros renderam <strong>${formatarMoeda(jurosUltimosAnos)}</strong> do total acumulado!`;
-
-        // Renderiza Tabelas e Outros Cenários
-        renderizarTabelaCenarios(p, pm, iMensal, meses, pctAumentoAnual);
-        renderizar3Cenarios(p, pm, meses, pctAumentoAnual);
-
-      } else {
-        // Modo Quanto Preciso Investir (Meta)
-        const meta = parseFloat(document.getElementById('metaTotal').value) || 0;
-        const aporteNecessario = calcularAporteParaMeta(p, meta, iMensal, meses);
-        
-        document.getElementById('totalFinal').innerHTML = `${formatarMoeda(aporteNecessario)} <span>por mês para atingir ${formatarMoeda(meta)}</span>`;
-        document.getElementById('totalInvestido').innerText = formatarMoeda(p + (aporteNecessario * meses));
-        document.getElementById('totalJuros').innerText = formatarMoeda(meta - (p + (aporteNecessario * meses)));
-        
-        const res = simularCrescimento(p, aporteNecessario, iMensal, meses, 0);
-        renderizarGrafico(res.labelsMeses, res.dadosInvestido, res.dadosJuros);
-      }
-    }
-
-    // Função de Simulação Mês a Mês
-    function simularCrescimento(pInicial, pMensal, taxaMensal, totalMeses, pctAumentoAnual) {
-      let montante = pInicial;
-      let totalInvestido = pInicial;
-      let aporteAtual = pMensal;
-
-      const labelsMeses = [];
-      const dadosInvestido = [];
-      const dadosJuros = [];
-
-      for (let m = 1; m <= totalMeses; m++) {
-        if (m > 1 && m % 12 === 1 && pctAumentoAnual > 0) {
-          aporteAtual += aporteAtual * (pctAumentoAnual / 100);
-        }
-
-        montante = (montante + aporteAtual) * (1 + taxaMensal);
-        totalInvestido += aporteAtual;
-
-        labelsMeses.push(`Mês ${m}`);
-        dadosInvestido.push(totalInvestido);
-        dadosJuros.push(montante - totalInvestido);
-      }
-
-      return {
-        totalFinal: montante,
-        totalInvestido: totalInvestido,
-        totalJuros: montante - totalInvestido,
-        labelsMeses: labelsMeses,
-        dadosInvestido: dadosInvestido,
-        dadosJuros: dadosJuros
-      };
-    }
-
-    // Cálculo Reverso de Meta
-    function calcularAporteParaMeta(pInicial, meta, taxaMensal, meses) {
-      let valorFuturoInicial = pInicial * Math.pow(1 + taxaMensal, meses);
-      let valorRestante = meta - valorFuturoInicial;
-      if (valorRestante <= 0) return 0;
-      let fvFactor = (Math.pow(1 + taxaMensal, meses) - 1) / taxaMensal;
-      return valorRestante / fvFactor;
-    }
-
-    // Renderizar Gráfico
-    function renderizarGrafico(labels, investido, juros) {
-      const ctx = document.getElementById('meuGrafico').getContext('2d');
-      if (chartInstance) chartInstance.destroy();
-
-      chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [
-            { label: 'Total Investido (R$)', data: investido, borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true },
-            { label: 'Juros Ganhos (R$)', data: juros, borderColor: '#16a34a', backgroundColor: 'rgba(22, 163, 74, 0.1)', fill: true }
-          ]
-        },
-        options: {
-          responsive: true,
-          interaction: { mode: 'index', intersect: false },
-          scales: { x: { display: false }, y: { stacked: false } }
-        }
-      });
-    }
-
-    // Renderizar Comparação de Cenários de Aporte
-    function renderizarTabelaCenarios(p, pm, iMensal, meses, pctAumentoAnual) {
-      const tbody = document.getElementById('tbodyCenarios');
-      tbody.innerHTML = '';
-      const multiplicadores = [0, 0.5, 1, 1.5, 2];
-
-      multiplicadores.forEach(mult => {
-        const aporteTemp = pm * mult;
-        const res = simularCrescimento(p, aporteTemp, iMensal, meses, pctAumentoAnual);
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${formatarMoeda(aporteTemp)}</strong></td>
-          <td>${formatarMoeda(res.totalInvestido)}</td>
-          <td style="color: var(--green);">${formatarMoeda(res.totalJuros)}</td>
-          <td><strong>${formatarMoeda(res.totalFinal)}</strong></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // Renderizar 3 Cenários (8%, 10%, 12%)
-    function renderizar3Cenarios(p, pm, meses, pctAumentoAnual) {
-      const iCons = Math.pow(1 + (8 / 100), 1/12) - 1;
-      const iMod = Math.pow(1 + (10 / 100), 1/12) - 1;
-      const iAgres = Math.pow(1 + (12 / 100), 1/12) - 1;
-
-      document.getElementById('scCons').innerText = formatarMoeda(simularCrescimento(p, pm, iCons, meses, pctAumentoAnual).totalFinal);
-      document.getElementById('scMod').innerText = formatarMoeda(simularCrescimento(p, pm, iMod, meses, pctAumentoAnual).totalFinal);
-      document.getElementById('scAgres').innerText = formatarMoeda(simularCrescimento(p, pm, iAgres, meses, pctAumentoAnual).totalFinal);
-    }
-
-    // Auxiliar de Formatação de Moeda
-    function formatarMoeda(valor) {
-      return (parseFloat(valor) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
-  </script>
+  <!-- Script JS Externo -->
+  <script src="js/juros-compostos.js"></script>
 </body>
 </html>
