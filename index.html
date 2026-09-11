@@ -52,6 +52,7 @@
 
   <main>
     <div class="calc-container">
+      <!-- Coluna Esquerda: Formulário e Simulações Rápidas -->
       <div>
         <div class="calc-tabs">
           <button class="tab-btn active" onclick="setModo('quantoVouTer')">Quanto vou ter?</button>
@@ -104,8 +105,8 @@
           <div class="label-box"><span>Aumento Anual do Aporte (%, Opcional)</span></div>
           <input type="number" id="aumentoAnual" value="0" step="0.5" placeholder="Ex: 5%" oninput="atualizarECalcular()">
         </div>
-      </div>
 
+        <!-- Botões de Simulação Rápida posicionados corretamente na coluna esquerda -->
         <div class="form-group" style="margin-top: 1.5rem;">
           <div class="label-box"><span>Simulações Rápidas ("E se?")</span></div>
           <div class="quick-buttons">
@@ -114,7 +115,9 @@
             <button type="button" class="btn-quick btn-reset" onclick="resetarSimulacao()">🔄 Resetar</button>
           </div>
         </div>
+      </div>
 
+      <!-- Coluna Direita: Painel de Resultados -->
       <div class="result-panel">
         <div>
           <div class="result-title" id="resTitle">Projeção Final</div>
@@ -176,7 +179,6 @@
           <tbody id="tbodyCenarios"></tbody>
         </table>
       </div>
-
     </div>
 
     <article class="section-box seo-content">
@@ -186,7 +188,6 @@
       <h2>Por que utilizar o simulador do SEMLINK?</h2>
       <p>Nossa ferramenta permite testar cenários realistas considerando aumentos anuais de aporte e calculando metas exatas.</p>
     </article>
-    
   </main>
 
   <footer>
