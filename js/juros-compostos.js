@@ -2,6 +2,22 @@ let modoAtual = 'quantoVouTer';
 let chartInstance = null;
 let debounceTimer = null;
 
+// Função auxiliar para sanitização e limites de segurança (Boas Práticas)
+function obterNumeroSeguro(idInput, min, max, valorPadrao = 0) {
+  const el = document.getElementById(idInput);
+  if (!el) return valorPadrao;
+  
+  let val = parseFloat(el.value);
+  if (isNaN(val) || val < min) val = min;
+  
+  if (val > max) {
+    val = max;
+    el.value = max; // Corrige o valor visualmente no input
+  }
+  
+  return val;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Configuração inicial do tema
   const temaSalvo = localStorage.getItem('theme');
@@ -27,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarEstado();
   }
 
-  // Vincula o evento de clique diretamente pelo listener JS (EVITA FALHAS NO MOBILE)
+  // Vincula o evento de clique diretamente pelo listener JS (Evita falhas no Mobile)
   const btnCompartilhar = document.getElementById('btnCopiarLink');
   if (btnCompartilhar) {
     btnCompartilhar.addEventListener('click', copiarLinkSimulacao);
@@ -60,7 +76,6 @@ function copiarLinkSimulacao(e) {
     })
     .then(() => notificarSucessoCopiar())
     .catch((err) => {
-      // Se o usuário não cancelou a ação manualmente, tenta o fallback
       if (err.name !== 'AbortError') {
         executarCopiaManual(urlCompleta);
       }
@@ -76,7 +91,7 @@ function copiarLinkSimulacao(e) {
     return;
   }
 
-  // 3. Fallback Garantido (Ambientes HTTP ou bloqueios estritos de celular)
+  // 3. Fallback Garantido (Ambientes HTTP ou bloqueios estritos)
   executarCopiaManual(urlCompleta);
 }
 
@@ -104,7 +119,6 @@ function executarCopiaManual(texto) {
   if (copiadoComSucesso) {
     notificarSucessoCopiar();
   } else {
-    // Se o sistema operacional bloquear todas as opções, abre a janela nativa com o link selecionado
     window.prompt('Copie o link da sua simulação abaixo:', texto);
   }
 }
@@ -119,7 +133,7 @@ function notificarSucessoCopiar() {
   }
 }
 
-// Fechar o menu de idiomas ao clicar fora dele (compatível com Mobile e Google Translate)
+// Fechar o menu de idiomas ao clicar fora dele
 document.addEventListener('click', (e) => {
   const containerDropdown = document.querySelector('.lang-dropdown');
   if (containerDropdown && !containerDropdown.contains(e.target)) {
@@ -139,23 +153,19 @@ function toggleLangMenu(e) {
 function traduzirPagina(langCode, countryCode) {
   localStorage.setItem('app_lang_code', countryCode);
   
-  // Atualiza a bandeira imediatamente
   const imgLangAtual = document.getElementById('imgLangAtual');
   if (imgLangAtual) {
     imgLangAtual.src = `https://flagcdn.com/w40/${countryCode}.png`;
   }
 
-  // Grava o cookie nativo que o Google Translate lê no celular
   document.cookie = `googtrans=/pt/${langCode}; path=/;`;
   document.cookie = `googtrans=/pt/${langCode}; domain=${window.location.hostname}; path=/;`;
 
-  // Tenta alterar via evento dinâmico
   const selectTranslate = document.querySelector('.goog-te-combo');
   if (selectTranslate && selectTranslate.value !== undefined) {
     selectTranslate.value = langCode;
     selectTranslate.dispatchEvent(new Event('change'));
   } else {
-    // Se o motor do Google travar no mobile, recarrega a página aplicando o cookie de idioma
     window.location.reload();
   }
 
@@ -334,16 +344,35 @@ function carregarEstado() {
   sincronizarAnosInput();
 }
 
+function carregarParametrosURL() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has('modo')) return false;
+
+  if (params.get('modo')) setModo(params.get('modo'));
+  if (params.has('vInit')) document.getElementById('valorInicial').value = params.get('vInit');
+  if (params.has('vMensal')) document.getElementById('valorMensal').value = params.get('vMensal');
+  if (params.has('meta')) document.getElementById('metaTotal').value = params.get('meta');
+  if (params.has('taxa')) document.getElementById('taxaJuros').value = params.get('taxa');
+  if (params.has('anos')) document.getElementById('anos').value = params.get('anos');
+  if (params.has('aumento')) document.getElementById('aumentoAnual').value = params.get('aumento');
+
+  sincronizarAporteInput();
+  sincronizarAnosInput();
+  return true;
+}
+
 function atualizarECalcular() {
-  const p = parseFloat(document.getElementById('valorInicial')?.value) || 0;
-  const taxaAnual = parseFloat(document.getElementById('taxaJuros')?.value) || 0;
-  const anos = Math.min(Math.max(1, parseInt(document.getElementById('anos')?.value) || 1), 50);
-  const pctAumentoAnual = parseFloat(document.getElementById('aumentoAnual')?.value) || 0;
+  // Leitura com sanitização contra negativos, textos e estouros de layout
+  const p = obterNumeroSeguro('valorInicial', 0, 1000000000, 0);
+  const taxaAnual = obterNumeroSeguro('taxaJuros', 0, 500, 0);
+  const anos = Math.round(obterNumeroSeguro('anos', 1, 50, 20));
+  const pctAumentoAnual = obterNumeroSeguro('aumentoAnual', 0, 100, 0);
+  
   const meses = anos * 12;
   const iMensal = Math.pow(1 + (taxaAnual / 100), 1/12) - 1;
 
   if (modoAtual === 'quantoVouTer') {
-    const pm = parseFloat(document.getElementById('valorMensal')?.value) || 0;
+    const pm = obterNumeroSeguro('valorMensal', 0, 10000000, 500);
     const res = simularCrescimento(p, pm, iMensal, meses, pctAumentoAnual);
     
     const totalFinalEl = document.getElementById('totalFinal');
@@ -365,7 +394,7 @@ function atualizarECalcular() {
     atualizarResumoDinamico(modoAtual, pm, anos, taxaAnual, pctAumentoAnual, res.totalFinal, null);
 
   } else {
-    const meta = parseFloat(document.getElementById('metaTotal')?.value) || 0;
+    const meta = obterNumeroSeguro('metaTotal', 1, 10000000000, 1000000);
     const aporteNecessario = calcularAporteParaMetaMapeado(p, meta, iMensal, meses, pctAumentoAnual);
     const res = simularCrescimento(p, aporteNecessario, iMensal, meses, pctAumentoAnual);
 
@@ -540,86 +569,4 @@ function alternarTema() {
     Chart.defaults.color = eDark ? '#94a3b8' : '#64748b';
     chartInstance.update();
   }
-}
-
-// 1. Gera e copia o link completo com todos os parâmetros atuais da simulação
-// Substitua a função copiarLinkSimulacao antiga por este bloco:
-
-function copiarLinkSimulacao() {
-  const params = new URLSearchParams({
-    modo: modoAtual,
-    vInit: document.getElementById('valorInicial')?.value || 0,
-    vMensal: document.getElementById('valorMensal')?.value || 0,
-    meta: document.getElementById('metaTotal')?.value || 0,
-    taxa: document.getElementById('taxaJuros')?.value || 0,
-    anos: document.getElementById('anos')?.value || 0,
-    aumento: document.getElementById('aumentoAnual')?.value || 0
-  });
-
-  const urlCompleta = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-
-  // 1. Se estiver no celular, abre a gaveta nativa de compartilhamento (WhatsApp, Copiar, etc.)
-  if (navigator.share) {
-    navigator.share({
-      title: 'Simulação Financeira',
-      text: 'Confira esta simulação de investimentos que fiz:',
-      url: urlCompleta
-    }).catch(() => {}); // Cancela silenciosamente se o usuário fechar o menu
-    return;
-  }
-
-  // 2. Se for Desktop com HTTPS, usa a Clipboard API
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(urlCompleta)
-      .then(() => notificarSucessoCopiar())
-      .catch(() => copiarFallback(urlCompleta));
-  } else {
-    // 3. Fallback universal para HTTP ou celulares sem suporte
-    copiarFallback(urlCompleta);
-  }
-}
-
-function copiarFallback(texto) {
-  const textArea = document.createElement('textarea');
-  textArea.value = texto;
-  textArea.style.position = 'fixed';
-  textArea.style.left = '-9999px';
-  document.body.appendChild(textArea);
-  textArea.focus();
-  textArea.select();
-
-  try {
-    document.execCommand('copy');
-    notificarSucessoCopiar();
-  } catch (err) {
-    prompt('Copie o link abaixo:', texto);
-  }
-  document.body.removeChild(textArea);
-}
-
-function notificarSucessoCopiar() {
-  const btn = document.getElementById('btnCopiarLink');
-  if (btn) {
-    const textoOriginal = btn.innerText;
-    btn.innerText = '✅ Link Copiado!';
-    setTimeout(() => { btn.innerText = textoOriginal; }, 2000);
-  }
-}
-
-// 2. Lê os parâmetros da URL caso a página tenha sido aberta via link compartilhado
-function carregarParametrosURL() {
-  const params = new URLSearchParams(window.location.search);
-  if (!params.has('modo')) return false; // Se não houver parâmetros, retorna falso
-
-  if (params.get('modo')) setModo(params.get('modo'));
-  if (params.has('vInit')) document.getElementById('valorInicial').value = params.get('vInit');
-  if (params.has('vMensal')) document.getElementById('valorMensal').value = params.get('vMensal');
-  if (params.has('meta')) document.getElementById('metaTotal').value = params.get('meta');
-  if (params.has('taxa')) document.getElementById('taxaJuros').value = params.get('taxa');
-  if (params.has('anos')) document.getElementById('anos').value = params.get('anos');
-  if (params.has('aumento')) document.getElementById('aumentoAnual').value = params.get('aumento');
-
-  sincronizarAporteInput();
-  sincronizarAnosInput();
-  return true;
 }
