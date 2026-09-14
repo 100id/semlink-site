@@ -44,17 +44,27 @@ function toggleLangMenu(e) {
 
 function traduzirPagina(langCode, countryCode) {
   localStorage.setItem('app_lang_code', countryCode);
+  
+  // Atualiza a bandeira imediatamente
   const imgLangAtual = document.getElementById('imgLangAtual');
   if (imgLangAtual) {
     imgLangAtual.src = `https://flagcdn.com/w40/${countryCode}.png`;
   }
-  
+
+  // Grava o cookie nativo que o Google Translate lê no celular
+  document.cookie = `googtrans=/pt/${langCode}; path=/;`;
+  document.cookie = `googtrans=/pt/${langCode}; domain=${window.location.hostname}; path=/;`;
+
+  // Tenta alterar via evento dinâmico
   const selectTranslate = document.querySelector('.goog-te-combo');
-  if (selectTranslate) {
+  if (selectTranslate && selectTranslate.value !== undefined) {
     selectTranslate.value = langCode;
     selectTranslate.dispatchEvent(new Event('change'));
+  } else {
+    // Se o motor do Google travar no mobile, recarrega a página aplicando o cookie de idioma
+    window.location.reload();
   }
-  
+
   const menu = document.getElementById('menuIdiomas');
   if (menu) menu.classList.remove('show');
 }

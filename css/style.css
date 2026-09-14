@@ -380,3 +380,15 @@ footer {
   background: var(--bg-card); 
   margin-top: 2rem; 
 }
+
+/* Bloqueia a barra e overlays do Google Translate que travam o toque no mobile */
+.goog-te-banner-frame, 
+#goog-gt-tt, 
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+}
