@@ -454,6 +454,8 @@ function alternarTema() {
 }
 
 // 1. Gera e copia o link completo com todos os parâmetros atuais da simulação
+// Substitua a função copiarLinkSimulacao antiga por este bloco:
+
 function copiarLinkSimulacao() {
   const params = new URLSearchParams({
     modo: modoAtual,
@@ -467,16 +469,52 @@ function copiarLinkSimulacao() {
 
   const urlCompleta = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
 
-  navigator.clipboard.writeText(urlCompleta).then(() => {
-    const btn = document.getElementById('btnCopiarLink');
-    if (btn) {
-      const textoOriginal = btn.innerText;
-      btn.innerText = '✅ Link Copiado!';
-      setTimeout(() => { btn.innerText = textoOriginal; }, 2000);
-    }
-  }).catch(() => {
-    alert('Não foi possível copiar o link automaticamente.');
-  });
+  // 1. Se estiver no celular, abre a gaveta nativa de compartilhamento (WhatsApp, Copiar, etc.)
+  if (navigator.share) {
+    navigator.share({
+      title: 'Simulação Financeira',
+      text: 'Confira esta simulação de investimentos que fiz:',
+      url: urlCompleta
+    }).catch(() => {}); // Cancela silenciosamente se o usuário fechar o menu
+    return;
+  }
+
+  // 2. Se for Desktop com HTTPS, usa a Clipboard API
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(urlCompleta)
+      .then(() => notificarSucessoCopiar())
+      .catch(() => copiarFallback(urlCompleta));
+  } else {
+    // 3. Fallback universal para HTTP ou celulares sem suporte
+    copiarFallback(urlCompleta);
+  }
+}
+
+function copiarFallback(texto) {
+  const textArea = document.createElement('textarea');
+  textArea.value = texto;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-9999px';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+
+  try {
+    document.execCommand('copy');
+    notificarSucessoCopiar();
+  } catch (err) {
+    prompt('Copie o link abaixo:', texto);
+  }
+  document.body.removeChild(textArea);
+}
+
+function notificarSucessoCopiar() {
+  const btn = document.getElementById('btnCopiarLink');
+  if (btn) {
+    const textoOriginal = btn.innerText;
+    btn.innerText = '✅ Link Copiado!';
+    setTimeout(() => { btn.innerText = textoOriginal; }, 2000);
+  }
 }
 
 // 2. Lê os parâmetros da URL caso a página tenha sido aberta via link compartilhado
