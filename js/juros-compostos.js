@@ -367,12 +367,18 @@ function formatarMoeda(valor) {
 
 function atualizarResumoDinamico(modo, aporte, anos, taxa, aumento, totalFinal, meta) {
   const container = document.getElementById('resumoDinamico');
-  if (!container) return;
+  if (!container) return; // Se a div não existir no HTML, ignora sem quebrar a tela
 
   const meses = anos * 12;
-  const aporteFmt = Number(aporte).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  const totalFmt = Number(totalFinal).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  const metaFmt = meta ? Number(meta).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+  
+  // Tratamento de segurança: se o valor não for um número válido, assume 0
+  const valAporte = Number(aporte) || 0;
+  const valTotal = Number(totalFinal) || 0;
+  const valMeta = Number(meta) || 0;
+
+  const aporteFmt = valAporte.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const totalFmt = valTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const metaFmt = meta ? valMeta.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
 
   const textoAumento = aumento > 0 ? ` com reajuste de <strong>${aumento}% ao ano</strong>` : '';
 
