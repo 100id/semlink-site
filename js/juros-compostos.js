@@ -81,14 +81,27 @@ function atualizarECalcular() {
 
   } else {
     const meta = parseFloat(document.getElementById('metaTotal').value) || 0;
-    const aporteNecessario = calcularAporteParaMeta(p, meta, iMensal, meses);
+    const aporteNecessario = calcularAporteParaMeta(p, meta, iMensal, meses, pctAumentoAnual);
     
-    document.getElementById('totalFinal').innerHTML = `${formatarMoeda(aporteNecessario)} <span>por mês para atingir ${formatarMoeda(meta)}</span>`;
-    document.getElementById('totalInvestido').innerText = formatarMoeda(p + (aporteNecessario * meses));
-    document.getElementById('totalJuros').innerText = formatarMoeda(meta - (p + (aporteNecessario * meses)));
+    // Simula o crescimento exato considerando o aumento anual para preencher totais e gráfico
+    const res = simularCrescimento(p, aporteNecessario, iMensal, meses, pctAumentoAnual);
+
+    let textoAporte = `por mês para atingir ${formatarMoeda(meta)}`;
+    if (pctAumentoAnual > 0) {
+      textoAporte += ` (com aumento de ${pctAumentoAnual}% ao ano)`;
+    }
+
+    document.getElementById('totalFinal').innerHTML = `${formatarMoeda(aporteNecessario)} <span>${textoAporte}</span>`;
+    document.getElementById('totalInvestido').innerText = formatarMoeda(res.totalInvestido);
+    document.getElementById('totalJuros').innerText = formatarMoeda(res.totalFinal - res.totalInvestido);
     
-    const res = simularCrescimento(p, aporteNecessario, iMensal, meses, 0);
     renderizarGrafico(res.labelsMeses, res.dadosInvestido, res.dadosJuros);
+    
+    const jurosUltimosAnos = res.dadosJuros[res.dadosJuros.length - 1] - (res.dadosJuros[Math.floor(res.dadosJuros.length * 0.75)] || 0);
+    document.getElementById('cardEfeitoTempo').innerHTML = `🎯 <strong>Estratégia para Meta:</strong> Começando com <strong>${formatarMoeda(aporteNecessario)}/mês</strong> e reajustando <strong>${pctAumentoAnual}% ao ano</strong>, você atinge o objetivo!`;
+
+    renderizarTabelaCenarios(p, aporteNecessario, iMensal, meses, pctAumentoAnual);
+    renderizar3Cenarios(p, aporteNecessario, meses, pctAumentoAnual);
   }
 }
 
@@ -124,12 +137,26 @@ function simularCrescimento(pInicial, pMensal, taxaMensal, totalMeses, pctAument
   };
 }
 
-function calcularAporteParaMeta(pInicial, meta, taxaMensal, meses) {
-  let valorFuturoInicial = pInicial * Math.pow(1 + taxaMensal, meses);
-  let valorRestante = meta - valorFuturoInicial;
-  if (valorRestante <= 0) return 0;
-  let fvFactor = (Math.pow(1 + taxaMensal, meses) - 1) / taxaMensal;
-  return valorRestante / fvFactor;
+// Busca binária rápida para encontrar o aporte inicial exato considerando o aumento anual
+function calcularAporteParaMeta(pInicial, meta, taxaMensal, meses, pctAumentoAnual) {
+  if (meta <= 0) return 0;
+  
+  let min = 0;
+  let max = meta;
+  let aporteEstimado = 0;
+
+  for (let i = 0; i < 50; i++) {
+    aporteEstimado = (min + max) / 2;
+    let resultado = simularCrescimento(pInicial, aporteEstimado, taxaMensal, meses, pctAumentoAnual);
+
+    if (resultado.totalFinal < meta) {
+      min = aporteEstimado;
+    } else {
+      max = aporteEstimado;
+    }
+  }
+
+  return aporteEstimado;
 }
 
 function renderizarGrafico(labels, investido, juros) {
@@ -206,7 +233,7 @@ function adicionarAnos(anosExtras) {
 }
 
 function resetarSimulacao() {
-  document.getElementById('valorInicial').value = 1000;
+  document.getElementById('valorInicial').value = 0; // Valor inicial ajustado para 0
   document.getElementById('valorMensal').value = 500;
   document.getElementById('taxaJuros').value = 10;
   document.getElementById('anos').value = 20;
