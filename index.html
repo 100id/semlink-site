@@ -59,7 +59,7 @@
         
         <!-- Dropdown de Idiomas -->
         <div class="lang-dropdown">
-          <button type="button" class="lang-dropdown-btn" onclick="toggleLangMenu()" id="btnLangAtual" title="Mudar Idioma">
+          <button type="button" class="lang-dropdown-btn" onclick="toggleLangMenu(event)" id="btnLangAtual" title="Mudar Idioma">
             <img src="https://flagcdn.com/w40/br.png" alt="Brasil" id="imgLangAtual">
             <span class="dropdown-arrow">▼</span>
           </button>
@@ -240,22 +240,6 @@
         pageLanguage: 'pt',
         autoDisplay: false
       }, 'google_translate_element');
-    }
-
-    function toggleLangMenu() {
-      document.getElementById('menuIdiomas').classList.toggle('show');
-    }
-
-    function traduzirPagina(lang, countryCode) {
-      document.getElementById('imgLangAtual').src = `https://flagcdn.com/w40/${countryCode}.png`;
-      
-      const select = document.querySelector('.goog-te-combo');
-      if (select) {
-        select.value = lang;
-        select.dispatchEvent(new Event('change'));
-      }
-
-      document.getElementById('menuIdiomas').classList.remove('show');
     }
   </script>
   <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

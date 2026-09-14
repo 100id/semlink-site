@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.add('dark-mode');
     const btnTheme = document.getElementById('btnTheme');
     if (btnTheme) btnTheme.innerText = '☀️';
-    Chart.defaults.color = '#94a3b8'; // Assegura que o gráfico obedeça o tema no carregamento
+    Chart.defaults.color = '#94a3b8';
   } else {
     Chart.defaults.color = '#64748b';
   }
@@ -21,19 +21,52 @@ document.addEventListener("DOMContentLoaded", () => {
     imgLangAtual.src = `https://flagcdn.com/w40/${langSalvo}.png`;
   }
   
-  carregarEstado(); // Carrega os dados inseridos previamente para não perder a seleção
+  carregarEstado();
   atualizarECalcular();
 });
+
+// Fechar o menu de idiomas ao clicar fora dele (compatível com Mobile e Google Translate)
+document.addEventListener('click', (e) => {
+  const containerDropdown = document.querySelector('.lang-dropdown');
+  if (containerDropdown && !containerDropdown.contains(e.target)) {
+    const menu = document.getElementById('menuIdiomas');
+    if (menu) menu.classList.remove('show');
+  }
+});
+
+function toggleLangMenu(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('menuIdiomas');
+  if (menu) {
+    menu.classList.toggle('show');
+  }
+}
+
+function traduzirPagina(langCode, countryCode) {
+  localStorage.setItem('app_lang_code', countryCode);
+  const imgLangAtual = document.getElementById('imgLangAtual');
+  if (imgLangAtual) {
+    imgLangAtual.src = `https://flagcdn.com/w40/${countryCode}.png`;
+  }
+  
+  const selectTranslate = document.querySelector('.goog-te-combo');
+  if (selectTranslate) {
+    selectTranslate.value = langCode;
+    selectTranslate.dispatchEvent(new Event('change'));
+  }
+  
+  const menu = document.getElementById('menuIdiomas');
+  if (menu) menu.classList.remove('show');
+}
 
 function agendarCalculo() {
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
-    salvarEstado(); // Salva toda vez que recalculado
+    salvarEstado();
     atualizarECalcular();
   }, 100);
 }
 
-// CORREÇÃO: Removido o argumento 'evt' que estava travando o código
 function setModo(modo) {
   if (modoAtual === modo && document.querySelector('.tab-btn.active')) return;
   modoAtual = modo;
@@ -161,7 +194,6 @@ function resetarSimulacao() {
   sincronizarAnosInput();
 }
 
-// Persistência: Impede que perca os dados na aba caso recarregue a tela clicando na logo SEMLINK inicial
 function salvarEstado() {
   localStorage.setItem('sl_modo', modoAtual);
   localStorage.setItem('sl_valInit', document.getElementById('valorInicial')?.value || 0);
@@ -367,11 +399,9 @@ function formatarMoeda(valor) {
 
 function atualizarResumoDinamico(modo, aporte, anos, taxa, aumento, totalFinal, meta) {
   const container = document.getElementById('resumoDinamico');
-  if (!container) return; // Se a div não existir no HTML, ignora sem quebrar a tela
+  if (!container) return;
 
   const meses = anos * 12;
-  
-  // Tratamento de segurança: se o valor não for um número válido, assume 0
   const valAporte = Number(aporte) || 0;
   const valTotal = Number(totalFinal) || 0;
   const valMeta = Number(meta) || 0;
@@ -405,40 +435,5 @@ function alternarTema() {
   if (chartInstance) {
     Chart.defaults.color = eDark ? '#94a3b8' : '#64748b';
     chartInstance.update();
-  }
-}
-
-function toggleLangMenu() {
-  const menu = document.getElementById('menuIdiomas');
-  if (menu) {
-    menu.classList.toggle('show');
-  }
-}
-
-function traduzirPagina(langCode, countryCode) {
-  localStorage.setItem('app_lang_code', countryCode);
-  const imgLangAtual = document.getElementById('imgLangAtual');
-  if (imgLangAtual) {
-    imgLangAtual.src = `https://flagcdn.com/w40/${countryCode}.png`;
-  }
-  
-  const selectTranslate = document.querySelector('.goog-te-combo');
-  if (selectTranslate) {
-    selectTranslate.value = langCode;
-    selectTranslate.dispatchEvent(new Event('change'));
-  }
-  
-  toggleLangMenu();
-}
-
-window.onclick = function(e) {
-  if (!e.target.matches('.lang-dropdown-btn') && !e.target.matches('#imgLangAtual') && !e.target.matches('.dropdown-arrow')) {
-    const dropdowns = document.getElementsByClassName("lang-dropdown-content");
-    for (let i = 0; i < dropdowns.length; i++) {
-      let openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
-      }
-    }
   }
 }
