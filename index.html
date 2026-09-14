@@ -15,7 +15,7 @@
   <meta property="og:description" content="Simule seu patrimônio com gráficos interativos, cenários de rentabilidade e metas financeiras.">
   <meta property="og:url" content="https://semlink.com.br/">
 
-  <!-- Arquivo CSS Externo (Boas Práticas) -->
+  <!-- Arquivo CSS Externo -->
   <link rel="stylesheet" href="css/style.css">
 
   <!-- Google tag (gtag.js) -->
@@ -41,12 +41,43 @@
 </head>
 <body>
 
+  <!-- Header principal com a logo, menu e dropdown de idiomas -->
   <header>
     <div class="header-container">
       <a href="index.html" class="logo">SEMLINK</a>
+      
       <nav class="nav-menu">
         <a href="index.html" class="nav-item active">Juros Compostos</a>
       </nav>
+
+      <!-- Container dos Controles da Direita -->
+      <div class="header-actions">
+        <!-- Botão Alternar Tema (Antes do Idioma) -->
+        <button type="button" class="theme-toggle-btn" id="btnTheme" onclick="alternarTema()" title="Alternar Tema">
+          🌙
+        </button>
+        
+        <!-- Dropdown de Idiomas -->
+        <div class="lang-dropdown">
+          <button type="button" class="lang-dropdown-btn" onclick="toggleLangMenu()" id="btnLangAtual" title="Mudar Idioma">
+            <img src="https://flagcdn.com/w40/br.png" alt="Brasil" id="imgLangAtual">
+            <span class="dropdown-arrow">▼</span>
+          </button>
+
+          <div class="lang-dropdown-content notranslate" id="menuIdiomas">
+            <button type="button" onclick="traduzirPagina('pt', 'br')"><img src="https://flagcdn.com/w40/br.png" alt="Brasil"> Português</button>
+            <button type="button" onclick="traduzirPagina('en', 'us')"><img src="https://flagcdn.com/w40/us.png" alt="EUA"> English</button>
+            <button type="button" onclick="traduzirPagina('es', 'es')"><img src="https://flagcdn.com/w40/es.png" alt="Espanha"> Español</button>
+            <button type="button" onclick="traduzirPagina('fr', 'fr')"><img src="https://flagcdn.com/w40/fr.png" alt="França"> Français</button>
+            <button type="button" onclick="traduzirPagina('de', 'de')"><img src="https://flagcdn.com/w40/de.png" alt="Alemanha"> Deutsch</button>
+            <button type="button" onclick="traduzirPagina('it', 'it')"><img src="https://flagcdn.com/w40/it.png" alt="Itália"> Italiano</button>
+            <button type="button" onclick="traduzirPagina('zh-CN', 'cn')"><img src="https://flagcdn.com/w40/cn.png" alt="China"> 中文</button>
+            <button type="button" onclick="traduzirPagina('ja', 'jp')"><img src="https://flagcdn.com/w40/jp.png" alt="Japão"> 日本語</button>
+            <button type="button" onclick="traduzirPagina('ru', 'ru')"><img src="https://flagcdn.com/w40/ru.png" alt="Rússia"> Русский</button>
+            <button type="button" onclick="traduzirPagina('ar', 'sa')"><img src="https://flagcdn.com/w40/sa.png" alt="Arábia Saudita"> العربية</button>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -55,8 +86,8 @@
       <!-- Coluna Esquerda: Formulário e Simulações Rápidas -->
       <div>
         <div class="calc-tabs">
-          <button class="tab-btn active" onclick="setModo('quantoVouTer')">Quanto vou ter?</button>
-          <button class="tab-btn" onclick="setModo('quantoInvestir')">Quanto preciso investir?</button>
+          <button class="tab-btn active" id="tabQuantoVouTer" onclick="setModo('quantoVouTer')">Quanto vou ter?</button>
+          <button class="tab-btn" id="tabQuantoInvestir" onclick="setModo('quantoInvestir')">Quanto preciso investir?</button>
         </div>
 
         <div class="calc-header">
@@ -106,7 +137,7 @@
           <input type="number" id="aumentoAnual" value="0" step="0.5" placeholder="Ex: 5%" oninput="atualizarECalcular()">
         </div>
 
-        <!-- Botões de Simulação Rápida posicionados corretamente na coluna esquerda -->
+        <!-- Botões de Simulação Rápida -->
         <div class="form-group" style="margin-top: 1.5rem;">
           <div class="label-box"><span>Simulações Rápidas ("E se?")</span></div>
           <div class="quick-buttons">
@@ -132,6 +163,11 @@
             <span>Total em Juros:</span>
             <span class="stat-val" id="totalJuros" style="color: var(--green);">R$ 0,00</span>
           </div>
+
+          <!-- Card de Resumo Dinâmico em Texto -->
+          <div id="resumoDinamico" class="summary-card">
+            💡 <strong>Resumo do Plano:</strong> Calcule para ver o resumo detalhado da sua meta.
+          </div>
         </div>
 
         <div class="time-effect-card" id="cardEfeitoTempo">
@@ -140,6 +176,7 @@
       </div>
     </div>
 
+    <!-- Seções Complementares -->
     <div class="section-box">
       <h2 class="section-title">Evolução do Patrimônio Mês a Mês</h2>
       <canvas id="meuGrafico" style="max-height: 380px;"></canvas>
@@ -193,6 +230,35 @@
   <footer>
     &copy; SEMLINK — Ferramentas e calculadoras financeiras.
   </footer>
+
+  <!-- Elemento invisível e scripts do Google Translate -->
+  <div id="google_translate_element" style="display:none;"></div>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'pt',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+
+    function toggleLangMenu() {
+      document.getElementById('menuIdiomas').classList.toggle('show');
+    }
+
+    function traduzirPagina(lang, countryCode) {
+      document.getElementById('imgLangAtual').src = `https://flagcdn.com/w40/${countryCode}.png`;
+      
+      const select = document.querySelector('.goog-te-combo');
+      if (select) {
+        select.value = lang;
+        select.dispatchEvent(new Event('change'));
+      }
+
+      document.getElementById('menuIdiomas').classList.remove('show');
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
   <!-- Script JS Externo -->
   <script src="js/juros-compostos.js"></script>
