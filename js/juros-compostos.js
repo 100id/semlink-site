@@ -21,7 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
     imgLangAtual.src = `https://flagcdn.com/w40/${langSalvo}.png`;
   }
   
-  carregarEstado();
+  // Prioridade: Se existirem dados na URL, carrega da URL; senão, do LocalStorage
+  const carregouURL = carregarParametrosURL();
+  if (!carregouURL) {
+    carregarEstado();
+  }
+
   atualizarECalcular();
 });
 
@@ -446,4 +451,48 @@ function alternarTema() {
     Chart.defaults.color = eDark ? '#94a3b8' : '#64748b';
     chartInstance.update();
   }
+}
+
+// 1. Gera e copia o link completo com todos os parâmetros atuais da simulação
+function copiarLinkSimulacao() {
+  const params = new URLSearchParams({
+    modo: modoAtual,
+    vInit: document.getElementById('valorInicial')?.value || 0,
+    vMensal: document.getElementById('valorMensal')?.value || 0,
+    meta: document.getElementById('metaTotal')?.value || 0,
+    taxa: document.getElementById('taxaJuros')?.value || 0,
+    anos: document.getElementById('anos')?.value || 0,
+    aumento: document.getElementById('aumentoAnual')?.value || 0
+  });
+
+  const urlCompleta = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+  navigator.clipboard.writeText(urlCompleta).then(() => {
+    const btn = document.getElementById('btnCopiarLink');
+    if (btn) {
+      const textoOriginal = btn.innerText;
+      btn.innerText = '✅ Link Copiado!';
+      setTimeout(() => { btn.innerText = textoOriginal; }, 2000);
+    }
+  }).catch(() => {
+    alert('Não foi possível copiar o link automaticamente.');
+  });
+}
+
+// 2. Lê os parâmetros da URL caso a página tenha sido aberta via link compartilhado
+function carregarParametrosURL() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has('modo')) return false; // Se não houver parâmetros, retorna falso
+
+  if (params.get('modo')) setModo(params.get('modo'));
+  if (params.has('vInit')) document.getElementById('valorInicial').value = params.get('vInit');
+  if (params.has('vMensal')) document.getElementById('valorMensal').value = params.get('vMensal');
+  if (params.has('meta')) document.getElementById('metaTotal').value = params.get('meta');
+  if (params.has('taxa')) document.getElementById('taxaJuros').value = params.get('taxa');
+  if (params.has('anos')) document.getElementById('anos').value = params.get('anos');
+  if (params.has('aumento')) document.getElementById('aumentoAnual').value = params.get('aumento');
+
+  sincronizarAporteInput();
+  sincronizarAnosInput();
+  return true;
 }
