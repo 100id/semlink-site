@@ -27,8 +27,97 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarEstado();
   }
 
+  // Vincula o evento de clique diretamente pelo listener JS (EVITA FALHAS NO MOBILE)
+  const btnCompartilhar = document.getElementById('btnCopiarLink');
+  if (btnCompartilhar) {
+    btnCompartilhar.addEventListener('click', copiarLinkSimulacao);
+  }
+
   atualizarECalcular();
 });
+
+// Função principal de compartilhamento
+function copiarLinkSimulacao(e) {
+  if (e) e.preventDefault();
+
+  const params = new URLSearchParams({
+    modo: modoAtual || 'quantoVouTer',
+    vInit: document.getElementById('valorInicial')?.value || 0,
+    vMensal: document.getElementById('valorMensal')?.value || 0,
+    meta: document.getElementById('metaTotal')?.value || 0,
+    taxa: document.getElementById('taxaJuros')?.value || 0,
+    anos: document.getElementById('anos')?.value || 0,
+    aumento: document.getElementById('aumentoAnual')?.value || 0
+  });
+
+  const urlCompleta = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+  // 1. Tentativa via Compartilhamento Nativo (WhatsApp/Redes no celular)
+  if (navigator.share) {
+    navigator.share({
+      title: 'Simulação Financeira',
+      url: urlCompleta
+    })
+    .then(() => notificarSucessoCopiar())
+    .catch((err) => {
+      // Se o usuário não cancelou a ação manualmente, tenta o fallback
+      if (err.name !== 'AbortError') {
+        executarCopiaManual(urlCompleta);
+      }
+    });
+    return;
+  }
+
+  // 2. Tentativa via Clipboard API (Ambientes HTTPS)
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(urlCompleta)
+      .then(() => notificarSucessoCopiar())
+      .catch(() => executarCopiaManual(urlCompleta));
+    return;
+  }
+
+  // 3. Fallback Garantido (Ambientes HTTP ou bloqueios estritos de celular)
+  executarCopiaManual(urlCompleta);
+}
+
+// Executa a cópia por área de texto temporária ou abre caixa de texto nativa
+function executarCopiaManual(texto) {
+  let copiadoComSucesso = false;
+
+  try {
+    const textArea = document.createElement('textarea');
+    textArea.value = texto;
+    textArea.style.position = 'fixed';
+    textArea.style.top = '0';
+    textArea.style.left = '0';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    copiadoComSucesso = document.execCommand('copy');
+    document.body.removeChild(textArea);
+  } catch (err) {
+    copiadoComSucesso = false;
+  }
+
+  if (copiadoComSucesso) {
+    notificarSucessoCopiar();
+  } else {
+    // Se o sistema operacional bloquear todas as opções, abre a janela nativa com o link selecionado
+    window.prompt('Copie o link da sua simulação abaixo:', texto);
+  }
+}
+
+// Feedback visual no botão
+function notificarSucessoCopiar() {
+  const btn = document.getElementById('btnCopiarLink');
+  if (btn) {
+    const textoOriginal = btn.innerText;
+    btn.innerText = '✅ Link Copiado!';
+    setTimeout(() => { btn.innerText = textoOriginal; }, 2000);
+  }
+}
 
 // Fechar o menu de idiomas ao clicar fora dele (compatível com Mobile e Google Translate)
 document.addEventListener('click', (e) => {
