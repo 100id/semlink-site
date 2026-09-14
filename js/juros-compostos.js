@@ -2,17 +2,19 @@ let modoAtual = 'quantoVouTer';
 let chartInstance = null;
 let debounceTimer = null;
 
-// Função auxiliar para sanitização e limites de segurança (Boas Práticas)
+// Sanitização estrita e limites de segurança (Impede negativos e estouro visual)
 function obterNumeroSeguro(idInput, min, max, valorPadrao = 0) {
   const el = document.getElementById(idInput);
   if (!el) return valorPadrao;
   
   let val = parseFloat(el.value);
-  if (isNaN(val) || val < min) val = min;
-  
-  if (val > max) {
+
+  if (isNaN(val) || val < min) {
+    val = min;
+    if (document.activeElement !== el) el.value = min; // Corrige o campo visual se desfocado ou inválido
+  } else if (val > max) {
     val = max;
-    el.value = max; // Corrige o valor visualmente no input
+    el.value = max; // Trava estouros de layout no valor máximo
   }
   
   return val;
@@ -43,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarEstado();
   }
 
-  // Vincula o evento de clique diretamente pelo listener JS (Evita falhas no Mobile)
+  // Vincula o evento de clique para evitar falhas em navegadores móveis
   const btnCompartilhar = document.getElementById('btnCopiarLink');
   if (btnCompartilhar) {
     btnCompartilhar.addEventListener('click', copiarLinkSimulacao);
@@ -52,38 +54,31 @@ document.addEventListener("DOMContentLoaded", () => {
   atualizarECalcular();
 });
 
-// Função principal de compartilhamento
+// Compartilhamento seguro (Previne XSS via URL)
 function copiarLinkSimulacao(e) {
   if (e) e.preventDefault();
 
   const params = new URLSearchParams({
     modo: modoAtual || 'quantoVouTer',
-    vInit: document.getElementById('valorInicial')?.value || 0,
-    vMensal: document.getElementById('valorMensal')?.value || 0,
-    meta: document.getElementById('metaTotal')?.value || 0,
-    taxa: document.getElementById('taxaJuros')?.value || 0,
-    anos: document.getElementById('anos')?.value || 0,
-    aumento: document.getElementById('aumentoAnual')?.value || 0
+    vInit: obterNumeroSeguro('valorInicial', 0, 1000000000, 0),
+    vMensal: obterNumeroSeguro('valorMensal', 0, 10000000, 500),
+    meta: obterNumeroSeguro('metaTotal', 1, 10000000000, 1000000),
+    taxa: obterNumeroSeguro('taxaJuros', 0, 500, 10),
+    anos: obterNumeroSeguro('anos', 1, 50, 20),
+    aumento: obterNumeroSeguro('aumentoAnual', 0, 100, 0)
   });
 
   const urlCompleta = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
 
-  // 1. Tentativa via Compartilhamento Nativo (WhatsApp/Redes no celular)
   if (navigator.share) {
-    navigator.share({
-      title: 'Simulação Financeira',
-      url: urlCompleta
-    })
-    .then(() => notificarSucessoCopiar())
-    .catch((err) => {
-      if (err.name !== 'AbortError') {
-        executarCopiaManual(urlCompleta);
-      }
-    });
+    navigator.share({ title: 'Simulação Financeira', url: urlCompleta })
+      .then(() => notificarSucessoCopiar())
+      .catch((err) => {
+        if (err.name !== 'AbortError') executarCopiaManual(urlCompleta);
+      });
     return;
   }
 
-  // 2. Tentativa via Clipboard API (Ambientes HTTPS)
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(urlCompleta)
       .then(() => notificarSucessoCopiar())
@@ -91,11 +86,9 @@ function copiarLinkSimulacao(e) {
     return;
   }
 
-  // 3. Fallback Garantido (Ambientes HTTP ou bloqueios estritos)
   executarCopiaManual(urlCompleta);
 }
 
-// Executa a cópia por área de texto temporária ou abre caixa de texto nativa
 function executarCopiaManual(texto) {
   let copiadoComSucesso = false;
 
@@ -103,8 +96,6 @@ function executarCopiaManual(texto) {
     const textArea = document.createElement('textarea');
     textArea.value = texto;
     textArea.style.position = 'fixed';
-    textArea.style.top = '0';
-    textArea.style.left = '0';
     textArea.style.opacity = '0';
     document.body.appendChild(textArea);
     textArea.focus();
@@ -123,7 +114,6 @@ function executarCopiaManual(texto) {
   }
 }
 
-// Feedback visual no botão
 function notificarSucessoCopiar() {
   const btn = document.getElementById('btnCopiarLink');
   if (btn) {
@@ -133,7 +123,7 @@ function notificarSucessoCopiar() {
   }
 }
 
-// Fechar o menu de idiomas ao clicar fora dele
+// Fechar o menu de idiomas ao clicar fora
 document.addEventListener('click', (e) => {
   const containerDropdown = document.querySelector('.lang-dropdown');
   if (containerDropdown && !containerDropdown.contains(e.target)) {
@@ -145,18 +135,14 @@ document.addEventListener('click', (e) => {
 function toggleLangMenu(e) {
   if (e) e.stopPropagation();
   const menu = document.getElementById('menuIdiomas');
-  if (menu) {
-    menu.classList.toggle('show');
-  }
+  if (menu) menu.classList.toggle('show');
 }
 
 function traduzirPagina(langCode, countryCode) {
   localStorage.setItem('app_lang_code', countryCode);
   
   const imgLangAtual = document.getElementById('imgLangAtual');
-  if (imgLangAtual) {
-    imgLangAtual.src = `https://flagcdn.com/w40/${countryCode}.png`;
-  }
+  if (imgLangAtual) imgLangAtual.src = `https://flagcdn.com/w40/${countryCode}.png`;
 
   document.cookie = `googtrans=/pt/${langCode}; path=/;`;
   document.cookie = `googtrans=/pt/${langCode}; domain=${window.location.hostname}; path=/;`;
@@ -187,22 +173,18 @@ function setModo(modo) {
 
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   
-  if (modo === 'quantoVouTer') {
-    document.getElementById('tabQuantoVouTer')?.classList.add('active');
-  } else {
-    document.getElementById('tabQuantoInvestir')?.classList.add('active');
-  }
-
   const containerVouTer = document.getElementById('modoQuantoVouTer');
   const containerInvestir = document.getElementById('modoQuantoInvestir');
 
   if (modo === 'quantoVouTer') {
+    document.getElementById('tabQuantoVouTer')?.classList.add('active');
     if (containerVouTer) containerVouTer.style.display = 'block';
     if (containerInvestir) containerInvestir.style.display = 'none';
     setElementText('calcTitle', 'Simulador de Juros Compostos');
     setElementText('calcDesc', 'Projete o crescimento do seu patrimônio em tempo real.');
     setElementText('resTitle', 'Projeção Final');
   } else {
+    document.getElementById('tabQuantoInvestir')?.classList.add('active');
     if (containerVouTer) containerVouTer.style.display = 'none';
     if (containerInvestir) containerInvestir.style.display = 'block';
     setElementText('calcTitle', 'Calculadora de Meta Financeira');
@@ -219,12 +201,10 @@ function setElementText(id, text) {
 }
 
 function sincronizarAporteInput() {
-  const el = document.getElementById('valorMensal');
-  if (!el) return;
-  const val = el.value;
+  const val = obterNumeroSeguro('valorMensal', 0, 10000000, 500);
   const slider = document.getElementById('sliderAporte');
   const label = document.getElementById('labelAporteSlider');
-  if (slider) slider.value = val;
+  if (slider) slider.value = Math.min(val, 10000);
   if (label) label.innerText = formatarMoeda(val);
   agendarCalculo();
 }
@@ -241,9 +221,7 @@ function sincronizarAporteSlider() {
 }
 
 function sincronizarAnosInput() {
-  const el = document.getElementById('anos');
-  if (!el) return;
-  const val = el.value;
+  const val = obterNumeroSeguro('anos', 1, 50, 20);
   const slider = document.getElementById('sliderAnos');
   const label = document.getElementById('labelAnosSlider');
   if (slider) slider.value = val;
@@ -267,14 +245,14 @@ function adicionarAporte(valorExtra) {
     const inputAporte = document.getElementById('valorMensal');
     if (inputAporte) {
       const valorAtual = parseFloat(inputAporte.value) || 0;
-      inputAporte.value = valorAtual + valorExtra;
+      inputAporte.value = Math.min(valorAtual + valorExtra, 10000000);
       sincronizarAporteInput();
     }
   } else {
     const inputMeta = document.getElementById('metaTotal');
     if (inputMeta) {
       const valorAtual = parseFloat(inputMeta.value) || 0;
-      inputMeta.value = valorAtual + (valorExtra * 12);
+      inputMeta.value = Math.min(valorAtual + (valorExtra * 12), 10000000000);
       agendarCalculo();
     }
   }
@@ -284,7 +262,7 @@ function adicionarAnos(anosExtras) {
   const inputAnos = document.getElementById('anos');
   if (inputAnos) {
     const valorAtual = parseInt(inputAnos.value) || 0;
-    inputAnos.value = valorAtual + anosExtras;
+    inputAnos.value = Math.min(valorAtual + anosExtras, 50);
     sincronizarAnosInput();
   }
 }
@@ -310,35 +288,24 @@ function resetarSimulacao() {
 
 function salvarEstado() {
   localStorage.setItem('sl_modo', modoAtual);
-  localStorage.setItem('sl_valInit', document.getElementById('valorInicial')?.value || 0);
-  localStorage.setItem('sl_valMensal', document.getElementById('valorMensal')?.value || 500);
-  localStorage.setItem('sl_meta', document.getElementById('metaTotal')?.value || 1000000);
-  localStorage.setItem('sl_taxa', document.getElementById('taxaJuros')?.value || 10);
-  localStorage.setItem('sl_anos', document.getElementById('anos')?.value || 20);
-  localStorage.setItem('sl_aumento', document.getElementById('aumentoAnual')?.value || 0);
+  localStorage.setItem('sl_valInit', obterNumeroSeguro('valorInicial', 0, 1000000000, 0));
+  localStorage.setItem('sl_valMensal', obterNumeroSeguro('valorMensal', 0, 10000000, 500));
+  localStorage.setItem('sl_meta', obterNumeroSeguro('metaTotal', 1, 10000000000, 1000000));
+  localStorage.setItem('sl_taxa', obterNumeroSeguro('taxaJuros', 0, 500, 10));
+  localStorage.setItem('sl_anos', obterNumeroSeguro('anos', 1, 50, 20));
+  localStorage.setItem('sl_aumento', obterNumeroSeguro('aumentoAnual', 0, 100, 0));
 }
 
 function carregarEstado() {
   const savedModo = localStorage.getItem('sl_modo');
   if (savedModo) setModo(savedModo);
 
-  const vInit = localStorage.getItem('sl_valInit');
-  if (vInit) document.getElementById('valorInicial').value = vInit;
-
-  const vMensal = localStorage.getItem('sl_valMensal');
-  if (vMensal) document.getElementById('valorMensal').value = vMensal;
-
-  const vMeta = localStorage.getItem('sl_meta');
-  if (vMeta) document.getElementById('metaTotal').value = vMeta;
-
-  const vTaxa = localStorage.getItem('sl_taxa');
-  if (vTaxa) document.getElementById('taxaJuros').value = vTaxa;
-
-  const vAnos = localStorage.getItem('sl_anos');
-  if (vAnos) document.getElementById('anos').value = vAnos;
-
-  const vAumento = localStorage.getItem('sl_aumento');
-  if (vAumento) document.getElementById('aumentoAnual').value = vAumento;
+  if (localStorage.getItem('sl_valInit') !== null) document.getElementById('valorInicial').value = localStorage.getItem('sl_valInit');
+  if (localStorage.getItem('sl_valMensal') !== null) document.getElementById('valorMensal').value = localStorage.getItem('sl_valMensal');
+  if (localStorage.getItem('sl_meta') !== null) document.getElementById('metaTotal').value = localStorage.getItem('sl_meta');
+  if (localStorage.getItem('sl_taxa') !== null) document.getElementById('taxaJuros').value = localStorage.getItem('sl_taxa');
+  if (localStorage.getItem('sl_anos') !== null) document.getElementById('anos').value = localStorage.getItem('sl_anos');
+  if (localStorage.getItem('sl_aumento') !== null) document.getElementById('aumentoAnual').value = localStorage.getItem('sl_aumento');
 
   sincronizarAporteInput();
   sincronizarAnosInput();
@@ -346,7 +313,7 @@ function carregarEstado() {
 
 function carregarParametrosURL() {
   const params = new URLSearchParams(window.location.search);
-  if (!params.has('modo')) return false;
+  if (!params.has('modo') && !params.has('vInit')) return false;
 
   if (params.get('modo')) setModo(params.get('modo'));
   if (params.has('vInit')) document.getElementById('valorInicial').value = params.get('vInit');
@@ -362,7 +329,6 @@ function carregarParametrosURL() {
 }
 
 function atualizarECalcular() {
-  // Leitura com sanitização contra negativos, textos e estouros de layout
   const p = obterNumeroSeguro('valorInicial', 0, 1000000000, 0);
   const taxaAnual = obterNumeroSeguro('taxaJuros', 0, 500, 0);
   const anos = Math.round(obterNumeroSeguro('anos', 1, 50, 20));
@@ -526,8 +492,11 @@ function renderizar3Cenarios(p, pm, meses, pctAumentoAnual) {
   setElementText('scAgres', formatarMoeda(simularCrescimento(p, pm, iAgres, meses, pctAumentoAnual).totalFinal));
 }
 
+// Formatação segura de moeda com tratamento para Infinity/NaN
 function formatarMoeda(valor) {
-  return (parseFloat(valor) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const num = parseFloat(valor);
+  if (isNaN(num) || !isFinite(num)) return 'R$ 0,00';
+  return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
 function atualizarResumoDinamico(modo, aporte, anos, taxa, aumento, totalFinal, meta) {
@@ -539,9 +508,9 @@ function atualizarResumoDinamico(modo, aporte, anos, taxa, aumento, totalFinal, 
   const valTotal = Number(totalFinal) || 0;
   const valMeta = Number(meta) || 0;
 
-  const aporteFmt = valAporte.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  const totalFmt = valTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  const metaFmt = meta ? valMeta.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+  const aporteFmt = formatarMoeda(valAporte);
+  const totalFmt = formatarMoeda(valTotal);
+  const metaFmt = meta ? formatarMoeda(valMeta) : '';
 
   const textoAumento = aumento > 0 ? ` com reajuste de <strong>${aumento}% ao ano</strong>` : '';
 
